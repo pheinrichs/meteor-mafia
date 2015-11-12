@@ -1,0 +1,191 @@
+/* CSS declarations go here */
+.center {
+     float: none;
+     margin-left: auto;
+     margin-right: auto;
+}
+.footer{
+    font-size: 8pt;
+}
+
+.title {
+    font-family: 'Abril Fatface';
+}
+.row{
+    margin-left: 0;
+    margin-right: 0;
+}
+.loading{
+    text-align: center;
+}
+.chat_sms_display {
+    overflow-y:auto;
+    position:relative;
+}
+
+#briefing {
+    padding: 0px 10px 0px 10px;
+}
+
+#players{
+    height: 400px;
+    overflow-y:auto;
+    position:relative;
+}
+.access{
+    text-align:center;
+}
+.access input{
+    text-align:center;
+}
+#chat {
+    padding: 0px 10px 0px 10px;
+}
+.center-footer{
+    text-align:center;
+}
+div.col-md-3 ul li {
+    width: 33.3%;
+    text-align: center;
+}
+
+div#players {
+    padding: 10px;
+}
+.queue{
+    padding-left: 5px;
+}
+.queue a{
+    display: inline-block;
+    width:32%;
+}
+.totals{
+    padding-left: 5px;
+}
+.totals a{
+    display: inline-block;
+    width:32%;
+}
+div#players br+button {
+    margin-top: 30px;
+}
+
+.new-message {
+    margin-top: 20px;
+}
+
+.message_row {
+    padding: 0px;
+    display: inline-block;
+    width: 100%;
+}
+
+.sms img {
+    margin-top: 5px;
+    margin-left: -30px;
+    position: absolute;
+}
+
+.sms {
+    float: left;
+    margin-left: ;
+    max-width: 70%;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.user_name {
+    width: 29%;
+    float: left;
+    padding-right: 20px;
+}
+
+.sms_01{
+    background: #F5A9A9;
+}.sms_02{
+    background: #F5BCA9;
+}.sms_03{
+    background: #F5D0A9;
+}.sms_04{
+    background: #F3E2A9;
+}.sms_05{
+    background: #F2F5A9;
+}.sms_06{
+    background: #E1F5A9;
+}.sms_07{
+    background: #D0F5A9;
+}.sms_08{
+    background: #BCF5A9;
+}.sms_09{
+    background: #A9F5A9;
+}.sms_10{
+    background: #A9F5BC;
+}.sms_11{
+    background: #A9F5D0;
+}.sms_12{
+    background: #A9F5E1;
+}.sms_13{
+    background: #A9F5F2;
+}.sms_14{
+    background: #A9E2F3;
+}.sms_15{
+    background: #A9D0F5;
+}.sms_16{
+    background: #A9BCF5;
+}.sms_17{
+    background: #A9A9F5;
+}.sms_18{
+    background: #BCA9F5;
+}.sms_19{
+    background: #F5A9D0;
+}.sms_20{
+    background: #F5A9BC;
+}
+
+  @media (max-width : 992px) {
+  .col-md-3 {
+        margin-left: 0%;
+    }
+    .access_text{
+        font-size: 300%;
+    }
+    .mobile button{
+        height: 150px;
+        font-size: 300%
+    }
+    .mobile input{
+        height: 150px;
+        font-size: 300%
+    }
+    .title {
+         font-size: 800%;
+    }
+    .queue a{
+        width:100%;
+    }
+
+     #players {
+        height: 700px;
+    }
+
+    .nav-tabs {
+        font-size: 40px;
+    }
+
+    #briefing button, #briefing, #players button, #chat button, #chat {
+        height: 60px;
+        font-size: 30px;
+        font-weight: normal;
+    }
+    .new-message {
+        bottom: 0px;
+        position: fixed;
+        margin-right: 10px;
+    }
+    input[name="text"], button {
+        font-size: 30px;
+        height: 60px;
+    }
+    }

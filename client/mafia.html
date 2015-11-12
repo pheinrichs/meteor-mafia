@@ -1,0 +1,267 @@
+<head>
+ <meta charset="utf-8">
+  <title >Mafia</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Abril+Fatface' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+	{{> main_menu}}
+</body>
+
+
+<template name="main_menu">
+<div class="container-fluid">
+	{{> flashMessages}}
+	{{> Template.dynamic template=pageSelect}}
+	</div>
+</template>
+
+<!-- Start Screen -->
+<template name="start_screen">
+
+	<div class="row">
+ 	   <div class="col-md-3 col-md-offset-4 mobile">
+ 	    <h1 class="text-center title">Mafia</h1>
+ 	    <hr>
+ 	    <div class="">
+	   	<button id="create_game" class="btn btn-block btn-default">New Game</button>
+	   	<button id="join_game" class="btn btn-block btn-default">Join Game</button>
+	   	</div>
+	   	<hr>
+		</div>
+	</div>
+	{{> footer }}
+</template>
+
+<!-- Create Game -->
+<template name="create_game">
+	<div class="row ">
+ 	   <div class="col-md-3 col-md-offset-4 mobile">
+	    <h1 class="text-center title">Create Game</h1>
+	 	<hr>
+	 	{{#if isLoading}}
+	 	<div class="center block loading"  style="margin-left:auto;">
+	 	<img src="/loading_spinner.gif" style="display: block; margin-left: auto; margin-right: auto; width:150px;height:150px;">
+	 	</div>
+	 	{{else}}
+	 	<div class="center-block mobile">
+	 	<button id="back" class="btn btn-block btn-default">Back</button>
+		<button class="btn btn-block btn-default" id="submit">Submit</button>
+		</div>
+		{{/if}}
+		<hr>
+		<div class="input-fields">
+		<input type="text" name="name" id="name" class="text form-control" data-toggle="tooltip" title="Check your spelling so you can rejoin later!" autofocus placeholder="Enter first name" >
+		<br>
+		<input type="text" name="pass" id="pass" class="text form-control" data-toggle="tooltip" title="Check your spelling so you can rejoin later!" placeholder="Enter Password" >
+		<hr>
+		</div>
+		</div>
+	</div>
+	{{> footer }}
+</template>
+
+<!-- Join Game -->
+<template name="join_game">
+	<div class="row ">
+ 	   <div class="col-md-3 col-md-offset-4 mobile">
+ 	    <h1 class="text-center title">Join Game</h1>
+ 	    <hr>
+ 	    {{#if isLoading}}
+	 	<div class="center block mobile loading" style="margin-left:auto;">
+	 	<img src="/loading_spinner.gif" style="display: block; margin-left: auto; margin-right: auto; width:150px;height:150px;">
+	 	</div>
+	 	{{else}}
+ 	    <div class=" center-block ">
+	  		<button id="back" class="btn btn-block btn-default">Back</button>
+	  		<button id="submit" class="btn btn-block btn-default">Join Game</button>
+	  	</div>
+	  	{{/if}}
+	  	<hr>
+	  	<div class="input-fields mobile">
+  		<input type="text" name="accessCode" id="accessCode" class="text access-code form-control" autofocus placeholder="Enter Session Code">
+  		<br>
+  		<input type="text" name="name" id="name" class="text form-control" data-toggle="tooltip" title="Enter name exactly how it was created" autofocus placeholder="Enter Name">  
+  		<br>
+		<input type="text" name="pass" id="pass" class="text form-control" data-toggle="tooltip" title="Enter name exactly how it was created"  placeholder="Enter Password" >  	
+    	<hr>
+    	</div>
+		</div>
+	</div>
+	{{> footer }}
+</template>
+	
+<!-- Queue to wait for players -->
+<template name="queue_list">
+	<div class="row ">
+ 	   <div class="col-md-3 col-md-offset-4 mobile">
+	 	    <h1 class="text-center title loading">Player List</h1>
+	 	    <hr>
+	 	    {{#if isLoading}}
+			 	<div class="center block mobile">
+	 			<img src="/loading_spinner.gif" style="display: block; margin-left: auto; margin-right: auto; width:150px;height:150px;">
+			 	</div>
+		 	{{else}}
+	 	    <div class="center-block mobile">
+	 	    	{{#if isHost }} <button id="start-game" class="btn btn-block btn-default" {{minPlayer}}>Start Game</button>{{ /if}}
+	    	  	<button id="leave" class="btn btn-block btn-default">Leave</button>
+	    	</div>
+	    	{{/if}}
+	    	<a href="#" data-toggle="tooltip" title="Minimum 5 players needed">Can't start?</a>
+	    	<hr>
+		    	<div class="access">
+		    	<span class="access_text">Game Link: </span><input type="text" value="{{ accessLink }}" readonly />
+		    	</div>
+	    	<hr>
+	    	<div class="queue">
+			<div class="list-group list-inline">
+		      {{#each players }}
+		      <a class="list-group-item">
+		      {{#if isHost }}<span class="badge"><i class="glyphicon glyphicon-remove remove" id="{{ _id }}"></i></span>{{/if}}
+		        {{ name }}
+		      </a>
+		    {{/each}}
+	    	</div>
+	    	</div>
+		</div>
+	</div>
+</template>
+
+<!-- Day -->
+<template name="day">
+	<div class="row ">
+		<!-- Briefing-->
+		{{checkVotes}}
+ 	   <div class="col-md-3 col-md-offset-4">
+ 	   <div class="row-head">
+	    <h1 class="text-center title">{{time}}</h1>
+        <hr>
+        	<ul class="nav nav-tabs">
+       		 <li><a data-toggle="tab" href="#briefing">Briefing </a></li>
+       		 {{#if access}}
+	    	 <li><a data-toggle="tab" href="#players">Voting </a></li>
+	    	 <li><a data-toggle="tab" update-time="up" href="#chat">Chat | {{ messageNotification }}</a></li>
+	    	 {{/if}}
+	    	 </ul>
+		<hr>
+		<br>
+		</div>
+		<div class="tab-content">
+
+			<div id="briefing" class="tab-pane fade access">
+		       	<h3 class="center">{{ myName }}</h3>
+		       	<div class="center">Current Role:{{#if isAlive}} {{else}} Dead {{/if}} {{role}}</div>
+		       	<br>
+		       	<div class="center">{{roleDescription}}</div>
+		       	<br>
+		        {{#if isMafia}}
+		        <div class="center">
+			        All Mafioso:
+			        {{#each otherMafia}}
+			        <br>
+			        {{ name }}
+			        {{/each}}
+		        </div>
+		        {{/if}}
+		        <hr>
+		        <div class="totals">
+		        	<div class="list-group list-inline">
+				      <a class="list-group-item">
+				        Mafioso: {{ mafioso }}
+				      </a>
+				      <a class="list-group-item">
+				        Civilians: {{ civilians }}
+				      </a>
+				       <a class="list-group-item">
+				        Inspector: {{ inspector }}
+				      </a>
+			    	</div>
+		        </div>
+
+		       	<hr>
+		       	 {{#each news }}
+		       	 <h4 class="headline">
+			      	{{ name }} | {{ summary }}
+			      	</h4>
+			      	<div class="article">
+			      	{{ reason }}
+			      	</div>
+			      	<hr>
+			    {{/each}}
+		    </div>
+				<!-- Voting -->
+			{{#if access}}
+			<div id="players" class="tab-pane fade">
+			<a href="#" data-toggle="tooltip" title="Select person you might suspect is a mafioso. 50% or higher votes needed">Help?</a>
+				 {{#each players }}
+			      <button id="{{_id}}" class="vote btn {{#if alive}}btn-info{{else}}btn-danger{{/if}} form-control" >
+			      	{{ name }} | {{votes}}
+			      </button>
+			      <br>
+			    {{/each}}
+			</div>
+			{{/if}}
+
+			<!-- Chat-->
+			{{#if access}}
+			<div id="chat" class="tab-pane fade">
+			<a href="#" data-toggle="tooltip" title="You're dead, dead people don't talk.">Cant type?</a>
+				<div id="chat_sms_display" class="chat_sms_display">
+				    {{#each chat}}
+					    <div class="message_row">
+					        <div class="user_name">
+						    	{{ username }}
+						    </div>
+						    <div class="sms {{ colour }}">
+						    	<img src="/{{ colour }}.png">{{text}}
+					    	</div>
+						</div>
+				    {{/each}}
+					</div>
+					{{#if isAlive}}  
+					<form class="new-message">
+					<div class="input-group">
+				        <input type="text" name="text" class="form-control" onfocus="{{updateScroll}}" placeholder="Send Message" />
+				        <span class="input-group-btn">
+						    <button class="btn btn-primary" type="submit" value="submit"><i class="glyphicon glyphicon-upload"> </i></button>
+						</span>
+					</div>
+				    </form>
+				    {{/if}}
+				</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="game_over">
+	<div class="row ">
+	<div class="col-md-3 col-md-offset-4">
+		<h1 class="text-center title whiteText">{{ winner }} Wins</h1>
+		<hr>
+		<div class="players">
+		<div>
+		{{ special }}
+		</div>
+		{{#each players}}
+		{{ name }} - {{ role }}
+		<br>
+		{{/each}}
+		</div>
+	</div>
+	</div>
+</template>
+
+<!-- Footers -->
+<template name="footer">
+	<div class="col-md-3 col-md-offset-4">
+	<div class="footer center-footer">
+		Inspired by <a href="http://spyfall.meteor.com/" target="_blank">evanbrumley Spyfall</a>, Based off the game <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)" target="_blank">Mafia</a>
+		 <br>
+		 Developed by Paul Daniel
+	</div>
+	</div>
+</template>
