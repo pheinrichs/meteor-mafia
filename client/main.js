@@ -1,4 +1,4 @@
-//evanbrumley Spyfall
+//evanbrumley Spyfall access link
 function getAccessLink()
 {
   var game = getCurrentGame();
@@ -155,10 +155,12 @@ function checkVotes(day)
         totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
         var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true},{}).fetch();
 
-        if(totalMafia.length === 0){
+        if(totalMafia.length === 0)
+        {
           Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
         }
-        else if(totalOther.length === 0){
+        else if(totalOther.length === 0)
+        {
            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
         }
         else if(totalMafia.length === totalOther.length){
@@ -187,7 +189,7 @@ function checkVotes(day)
           Games.update(game._id, {$set: {state: 'inspection'}});    
         }
       }
-    }
+      }
     }
     else
     {
@@ -199,13 +201,16 @@ function checkVotes(day)
           totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
           var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true},{}).fetch();
 
-          if(totalMafia.length === 0){
+          if(totalMafia.length === 0)
+          {
             Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
           }
-          else if(totalOther.length === 0){
+          else if(totalOther.length === 0)
+          {
              Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
           }
-          else if(totalMafia.length === totalOther.length){
+          else if(totalMafia.length === totalOther.length)
+          {
              Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
           }
           else
@@ -333,7 +338,8 @@ function assignRoles(players)
   'sms_11','sms_12','sms_13','sms_14','sms_15',
   'sms_16','sms_17','sms_18','sms_19','sms_20'];
 
-  if(totalPlayers >= 9 ){
+  if(totalPlayers >= 9 )
+  {
     var totalInspector = 1;
     Games.update(Session.get("gameID"), {$set: {isInspector: true}});
    // var totalDoctor = 1;
@@ -484,10 +490,10 @@ Template.create_game.helpers({
 
   /*--------------------------Join Game---------------------*/
   Template.join_game.helpers({
-  isLoading: function() {
-    return Session.get('loading');
-  }
-});
+    isLoading: function() {
+      return Session.get('loading');
+    }
+  });
 
   Template.join_game.events({
     'click #back': function () 
@@ -688,11 +694,11 @@ Template.queue_list.events({
       var player = getCurrentPlayer();
       if(player.role === 'mafioso')
       {
-        return "During the day, you must blend in with the rest and avoid being voted out. During the night, all Mafioso must decide together who to off.";
+        return "During the day you must blend in with the rest and avoid being voted out. During the night, all Mafioso must decide together who to off.";
       }
       else if(player.role === 'civilian')
       {
-        return "During the day, all civilians must decide to vote someone out. You will need more than half of everyones votes. Good luck.";
+        return "During the day all civilians must decide to vote someone out. You will need more than half of everyones votes. Good luck.";
       }
       else if(player.role === 'inspector')
       {
@@ -960,7 +966,6 @@ Template.queue_list.events({
     $(document).ready(function(){
       $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
     });
-
   };
 
   Template.game_over.rendered = function(){

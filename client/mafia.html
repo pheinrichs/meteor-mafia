@@ -10,7 +10,6 @@
 	{{> main_menu}}
 </body>
 
-
 <template name="main_menu">
 <div class="container-fluid">
 	{{> flashMessages}}
@@ -20,7 +19,6 @@
 
 <!-- Start Screen -->
 <template name="start_screen">
-
 	<div class="row">
  	   <div class="col-md-3 col-md-offset-4 mobile">
  	    <h1 class="text-center title">Mafia</h1>
@@ -191,7 +189,8 @@
 			      	<hr>
 			    {{/each}}
 		    </div>
-				<!-- Voting -->
+
+			<!-- Voting -->
 			{{#if access}}
 			<div id="players" class="tab-pane fade">
 			<a href="#" data-toggle="tooltip" title="Select person you might suspect is a mafioso. 50% or higher votes needed">Help?</a>
@@ -237,6 +236,7 @@
 	</div>
 </template>
 
+<!-- Game Over -->
 <template name="game_over">
 	<div class="row ">
 	<div class="col-md-3 col-md-offset-4">
