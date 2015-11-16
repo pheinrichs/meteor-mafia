@@ -139,9 +139,9 @@
 	    <h1 class="text-center title">{{time}}</h1>
         <hr>
         	<ul class="nav nav-tabs">
-       		 <li><a data-toggle="tab" href="#briefing">Briefing </a></li>
+       		 <li><a data-toggle="tab" update-time="down" href="#briefing">Briefing </a></li>
        		 {{#if access}}
-	    	 <li><a data-toggle="tab" href="#players">Voting </a></li>
+	    	 <li><a data-toggle="tab" update-time="down" href="#players">Voting </a></li>
 	    	 <li><a data-toggle="tab" update-time="up" href="#chat">Chat | {{ messageNotification }}</a></li>
 	    	 {{/if}}
 	    	 </ul>

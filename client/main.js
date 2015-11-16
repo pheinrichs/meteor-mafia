@@ -136,7 +136,8 @@ function createCustomArray(word,amount)
   return tempArray;
 }
 
-function checkVotes(day){
+function checkVotes(day)
+{
     var game = getCurrentGame();
     var totalPlayers = Players.find({'gameID': game._id,  'alive': true},{}).fetch();
 
@@ -214,19 +215,18 @@ function checkVotes(day){
           {
             Players.update(each._id, {$set: {votes: 0,voteCast: null}});
           });
-
           //purge chat at the end of every phase
           chats.forEach(function(chat){
             Chat.remove(chat._id);
           });
-
           Games.update(game._id, {$set: {state: 'day'}});
         }
         }
       }
     }
 
-function shuffleArray(array) {
+function shuffleArray(array) 
+{
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var temp = array[i];
@@ -236,7 +236,8 @@ function shuffleArray(array) {
     return array;
 }
 
-function deaths(){
+function deaths()
+{
   var deaths = ['were shot',
   'were hung',
   'were decapitated',
@@ -251,7 +252,8 @@ function deaths(){
   return item;
 }
 
-function noun(){
+function noun()
+{
   var who = ['an angry mob',
   'break dancers',
   'Aunt Jemima',
@@ -263,7 +265,8 @@ function noun(){
   return item;
 }
 
-function locations(){
+function locations()
+{
   var locations = ['at the park',
   'on a boat',
   'at a party',
@@ -276,7 +279,8 @@ function locations(){
   return item;
 }
 
-function verbs(){
+function verbs()
+{
   var verb = ['skipping rocks',
   'eating',
   'drinking coffee',
@@ -289,7 +293,8 @@ function verbs(){
   return item;
 }
 
-function mafiaNews(playerName){
+function mafiaNews(playerName)
+{
   var death = deaths();
   var who = noun();
   var location = locations();
@@ -306,7 +311,8 @@ function mafiaNews(playerName){
   });
 }
 
-function communityNews(playerName){
+function communityNews(playerName)
+{
   var game = getCurrentGame();
   Meteor.subscribe('news',game._id);
   News.insert({
@@ -318,7 +324,8 @@ function communityNews(playerName){
       });
 }
 
-function assignRoles(players){
+function assignRoles(players)
+{
   var totalPlayers = players.length;
   var totalMafia = Math.floor(Math.sqrt(totalPlayers));
   var colours = ['sms_01','sms_02','sms_03','sms_04','sms_05',
@@ -353,14 +360,15 @@ function assignRoles(players){
  });
 
 }
-function updateScroll() {
+function updateScroll() 
+{
   $("#chat_sms_display").animate({ 
     scrollTop: $('#chat_sms_display')[0].scrollHeight
   }, 200);
 }
 
-function leave(){
-  
+function leave()
+{
   Session.set('urlAccessCode', null);
   Session.set("gameID", null);
   Session.set("isHost", null);
@@ -372,7 +380,8 @@ function leave(){
   }
   Session.set("template_select","start_screen");
 }
-function kill_game(){
+function kill_game()
+{
   var player = getCurrentPlayer();
 
   if (player){
@@ -380,7 +389,8 @@ function kill_game(){
   }
   location.reload();
 }
-function reset_user(){
+function reset_user()
+{
   Session.set('urlAccessCode', null);
   Session.set("gameID", null);
   Session.set("playerID", null);
@@ -389,8 +399,8 @@ function reset_user(){
   Session.set("playerID", null);
 }
   //evanbrumley Spyfall
-  function trackUrlState () {
-
+  function trackUrlState() 
+  {
     var accessCode = null;
     var game = getCurrentGame();
     if (game){
@@ -398,7 +408,6 @@ function reset_user(){
     } else {
       accessCode = Session.get('urlAccessCode');
     }
-    
     var currentURL = '/';
     if (accessCode){
       currentURL += accessCode+'/';
@@ -406,7 +415,6 @@ function reset_user(){
     window.history.pushState(null, null, currentURL);
   }
   Tracker.autorun(trackUrlState);
-  //--
 
 Tracker.autorun(stateMachine);
 /*------------------------------End Functions----------------*/
@@ -475,13 +483,11 @@ Template.create_game.helpers({
   });
 
   /*--------------------------Join Game---------------------*/
-
   Template.join_game.helpers({
   isLoading: function() {
     return Session.get('loading');
   }
 });
-
 
   Template.join_game.events({
     'click #back': function () 
@@ -536,7 +542,6 @@ Template.create_game.helpers({
           Session.set("playerID", player._id);
           Session.set("playerName",player.name);
           });
-         
         }
         else
           //if game in progress
@@ -573,16 +578,11 @@ Template.create_game.helpers({
   });
 
   /*--------------------------Queue---------------------*/
-
-
   Template.queue_list.helpers({
-    game: function() 
-    {
+    game: function(){
       return getCurrentGame();
     },
-
-    player: function ()
-    {
+    player: function(){
       return getCurrentPlayer();
     },
     isLoading: function() {
@@ -610,9 +610,7 @@ Template.create_game.helpers({
         return "disabled";
       }
     },
-
-    players: function()
-    {
+    players: function(){
       var game = getCurrentGame();
       var currentPlayer = getCurrentPlayer();
 
@@ -630,10 +628,8 @@ Template.create_game.helpers({
             Players.update(player._id, {$set: {isMafia: true}});
           }
       });
-
       return players;
     },
-
     accessLink: function () 
     {
       return getAccessLink();
@@ -666,7 +662,6 @@ Template.queue_list.events({
 });
 
 /*--------------------------Day---------------------*/
-
   Template.day.helpers({
     time: function(){
       var game = getCurrentGame();
@@ -687,10 +682,7 @@ Template.queue_list.events({
       return player.isMafia;
     },
     updateScroll: function(){
-      setInterval(function(){
         updateScroll();
-      }, 1000);
-      
     },
     roleDescription: function(){
       var player = getCurrentPlayer();
@@ -711,6 +703,7 @@ Template.queue_list.events({
         return "During the night you have the opportunity to save one player. Including yourself."
       }
     },
+    //visiblity per player role
     access: function(){
       var game = getCurrentGame();
       var player = getCurrentPlayer();
@@ -775,7 +768,6 @@ Template.queue_list.events({
       var inspect = Players.find({'gameID': game._id,'role':'inspector'}, {}).fetch();
       return inspect.length;
     },
-    //voting
     players: function(){
       var game = getCurrentGame();
       var currentPlayer = getCurrentPlayer();
@@ -798,7 +790,6 @@ Template.queue_list.events({
       }
     },
   });
-
 
   Template.day.events({
     //voting
@@ -847,9 +838,7 @@ Template.queue_list.events({
         else
         {
           alert(votedPlayer.name + " | " + votedPlayer.role);
-
           var isDoctorAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
-
           if(isDoctorAlive.length == 0)
           {
             Games.update(game._id, {$set: {state: 'night'}});
@@ -858,13 +847,10 @@ Template.queue_list.events({
           {
             Games.update(game._id, {$set: {state: 'medic'}});
           }
-          
         }
       }
-
       //add more role phases here via else if
-
-        checkVotes(game.state);
+      checkVotes(game.state);
     },
 
     //chat
@@ -889,11 +875,8 @@ Template.queue_list.events({
       Session.set("message_check", moment().format());
       // Clear form
       event.target.text.value = "";
-      
-      
-    }
+      }
   });
-
 
 /*--------------------------Inspection---------------------*/
   Template.game_over.helpers({
@@ -913,20 +896,19 @@ Template.queue_list.events({
   });
 
 /*--------------------------Renders---------------------*/
-
-  Template.queue_list.rendered = function () 
-  {
+  Template.queue_list.rendered = function(){
     $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
     });
   };
 
   Template.day.rendered = function(){
-    //hasWinner();
     var scrolled = false;
     var heights = window.innerHeight;
     var row_H = $('.row').height();
     var smsField_H = $('.new-message').height();
+    var shown_tab = false;
+
     if(window.innerWidth < 994){
        document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
     }
@@ -934,19 +916,39 @@ Template.queue_list.events({
       document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
     }
 
+    setInterval(function(){
+      if(shown_tab){
+      var divHeight = $('#chat_sms_display').height();
+      var scrollHeight = $('#chat_sms_display').prop('scrollHeight');  
+      var scrolledpx = parseInt($("#chat_sms_display").scrollTop()); 
+      if(($("#chat_sms_display").scrollTop()+divHeight) > (scrollHeight-150)) {
+          Session.set("message_check", moment().format());
+          updateScroll();
+        }else{
+          //do nothing
+        }
+      }
+    },500);
+
     window.onresize = function(event) {
-     var heights = window.innerHeight;
-    var row_H = $('.row').height();
-    var smsField_H = $('.new-message').height();
-    if(window.innerWidth < 994){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
-    }else{
-      document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
+      var heights = window.innerHeight;
+      var row_H = $('.row').height();
+      var smsField_H = $('.new-message').height();
+      if(window.innerWidth < 994){
+         document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
+      }else{
+        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
+      }
     }
-    }
+
     $('a[update-time="up"]').on('shown.bs.tab', function (e) {
+      shown_tab = true;
       Session.set("message_check", moment().format());
       updateScroll();
+    });
+
+    $('a[update-time="down"]').on('shown.bs.tab', function (e) {
+      shown_tab = false;
     });
 
     var game = getCurrentGame();
@@ -954,13 +956,14 @@ Template.queue_list.events({
     $('.nav-tabs a').click(function(){
         $(this).tab('show');
     });
+
     $(document).ready(function(){
       $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
     });
 
   };
 
-   Template.game_over.rendered = function(){
+  Template.game_over.rendered = function(){
     window.setTimeout(kill_game, 30000);
   };
 
@@ -989,20 +992,4 @@ Template.queue_list.events({
     placement: "right",
     trigger: "focus"
   });
-  };
-
-    Template.join_game.rendered = function (event) 
-  {
-    var urlAccessCode = Session.get('urlAccessCode');
-
-    if (urlAccessCode)
-    {
-      $("#access-code").val(urlAccessCode);
-      $("#access-code").hide();
-      $("#player-name").focus();
-    } 
-    else 
-    {
-      $("#access-code").focus();
-    }
   };

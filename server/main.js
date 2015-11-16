@@ -18,7 +18,6 @@ function cleanUpGamesAndPlayers(){
 }
 
 Meteor.startup(function () {
-    // The correct way
     Players.remove({});
     Chat.remove({});
     Games.remove({});
@@ -29,12 +28,9 @@ var everyHour = new Cron(function() {
     cleanUpGamesAndPlayers();
 }, {minute: 1});
 
-//set a proper timeout value
-// possibly check when last chat or game created time is at
 
     Meteor.publish('games', function(accessCode) {
     return Games.find({"accessCode": accessCode});
-    //return Games.find();
   });
 
   Meteor.publish('players', function(gameID) {
@@ -42,7 +38,6 @@ var everyHour = new Cron(function() {
   });
 
    Meteor.publish('chat', function(gameID) {
-    //return Games.find({"accessCode": accessCode});
     return Chat.find({"game": gameID});
   });
 
