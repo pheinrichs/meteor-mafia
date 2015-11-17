@@ -679,6 +679,14 @@ Template.queue_list.events({
       var role = getCurrentPlayer();
       return role.role;
     },
+    isMobile: function(){
+     if(window.innerWidth < 994){
+         return true;
+      }
+      else{
+        return false;
+      }
+    },
     myName: function(){
       var role = getCurrentPlayer();
       return role.name;
@@ -915,8 +923,11 @@ Template.queue_list.events({
     var smsField_H = $('.new-message').height();
     var shown_tab = false;
 
-    if(window.innerWidth < 994){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
+    if(window.innerWidth <= 500){
+       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
+    }
+    else if(window.innerWidth < 994 && window.innerWidth > 500){
+       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
     }
     else{
       document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
@@ -940,8 +951,11 @@ Template.queue_list.events({
       var heights = window.innerHeight;
       var row_H = $('.row').height();
       var smsField_H = $('.new-message').height();
-      if(window.innerWidth < 994){
-         document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
+       if(window.innerWidth <= 500){
+       document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
+      }
+      else if(window.innerWidth < 994 && window.innerWidth > 500){
+         document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
       }else{
         document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
       }

@@ -23,9 +23,7 @@
     position:relative;
 }
 
-#briefing {
-    padding: 0px 10px 0px 10px;
-}
+
 
 #players{
     height: 400px;
@@ -162,6 +160,9 @@ div#players br+button {
     .title {
          font-size: 800%;
     }
+    .title-text{
+        display: none;
+    }
     .queue a{
         width:100%;
     }
@@ -187,5 +188,56 @@ div#players br+button {
     input[name="text"], button {
         font-size: 30px;
         height: 60px;
+    }
+    }
+
+ @media (max-width : 500px) {
+  .col-md-3 {
+        margin-left: 0%;
+    }
+    .access_text{
+        font-size: 300%;
+    }
+    .mobile button{
+        height: 150px;
+        font-size: 300%
+    }
+    .mobile input{
+        height: 150px;
+        font-size: 300%
+    }
+    .title {
+         font-size: 150%;
+    }
+    .queue a{
+        width:100%;
+    }
+    .title-text{
+        display: none;
+    }
+     #players {
+        height: 700px;
+    }
+
+    .nav-tabs {
+        font-size: 20px;
+    }
+
+    #briefing button, #briefing, #players button, #chat {
+        height: 60px;
+        font-size: 20px;
+        font-weight: normal;
+    }
+     #chat button{
+        height: 40px;
+        font-size: 15px;
+     }
+    .new-message {
+        bottom: 0px;
+        position: fixed;
+    }
+    input[name="text"], button {
+        font-size: 15px;
+        height: 40px;
     }
     }

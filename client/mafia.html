@@ -1,5 +1,6 @@
 <head>
  <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
   <title >Mafia</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -134,8 +135,10 @@
 		{{checkVotes}}
  	   <div class="col-md-3 col-md-offset-4">
  	   <div class="row-head">
+ 	   <div class="title-text">
 	    <h1 class="text-center title">{{time}}</h1>
         <hr>
+        </div>
         	<ul class="nav nav-tabs">
        		 <li><a data-toggle="tab" update-time="down" href="#briefing">Briefing </a></li>
        		 {{#if access}}
@@ -150,10 +153,12 @@
 
 			<div id="briefing" class="tab-pane fade access">
 		       	<h3 class="center">{{ myName }}</h3>
-		       	<div class="center">Current Role:{{#if isAlive}} {{else}} Dead {{/if}} {{role}}</div>
 		       	<br>
-		       	<div class="center">{{roleDescription}}</div>
+		       	<h4 class="center">Current Role:{{#if isAlive}} {{else}} Dead {{/if}} {{role}}</h4>
 		       	<br>
+		       	<h5 class="center">{{roleDescription}}</h5>
+		       	<hr>
+				<div class="center">{{time}}</div>
 		        {{#if isMafia}}
 		        <div class="center">
 			        All Mafioso:
@@ -167,13 +172,13 @@
 		        <div class="totals">
 		        	<div class="list-group list-inline">
 				      <a class="list-group-item">
-				        Mafioso: {{ mafioso }}
+				        Mafioso: <br>{{ mafioso }}
 				      </a>
 				      <a class="list-group-item">
-				        Civilians: {{ civilians }}
+				        Civilians: <br>{{ civilians }}
 				      </a>
 				       <a class="list-group-item">
-				        Inspector: {{ inspector }}
+				        Inspector: <br>{{ inspector }}
 				      </a>
 			    	</div>
 		        </div>
@@ -193,7 +198,7 @@
 			<!-- Voting -->
 			{{#if access}}
 			<div id="players" class="tab-pane fade">
-			<a href="#" data-toggle="tooltip" title="Select person you might suspect is a mafioso. 50% or higher votes needed">Help?</a>
+			<!--<a href="#" data-toggle="tooltip" title="Select person you might suspect is a mafioso. 50% or higher votes needed">Help?</a>-->
 				 {{#each players }}
 			      <button id="{{_id}}" class="vote btn {{#if alive}}btn-info{{else}}btn-danger{{/if}} form-control" >
 			      	{{ name }} | {{votes}}
@@ -206,7 +211,7 @@
 			<!-- Chat-->
 			{{#if access}}
 			<div id="chat" class="tab-pane fade">
-			<a href="#" data-toggle="tooltip" title="You're dead, dead people don't talk.">Cant type?</a>
+			<!--<a href="#" data-toggle="tooltip" title="You're dead, dead people don't talk.">Cant type?</a>-->
 				<div id="chat_sms_display" class="chat_sms_display">
 				    {{#each chat}}
 					    <div class="message_row">
