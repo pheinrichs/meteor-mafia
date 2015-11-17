@@ -760,7 +760,7 @@ Template.queue_list.events({
     },
     otherMafia: function(){
       var game = getCurrentGame();
-      var players = Players.find({'game': game._id}, {}).fetch();
+      var players = Players.find({'gameID': game._id,'isMafia':true}, {}).fetch();
       return players;
     },
     isAlive: function(){

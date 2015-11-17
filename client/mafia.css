@@ -149,14 +149,7 @@ div#players br+button {
     .access_text{
         font-size: 300%;
     }
-    .mobile button{
-        height: 150px;
-        font-size: 300%
-    }
-    .mobile input{
-        height: 150px;
-        font-size: 300%
-    }
+
     .title {
          font-size: 800%;
     }
@@ -199,12 +192,10 @@ div#players br+button {
         font-size: 300%;
     }
     .mobile button{
-        height: 150px;
-        font-size: 300%
+
     }
     .mobile input{
-        height: 150px;
-        font-size: 300%
+
     }
     .title {
          font-size: 150%;
