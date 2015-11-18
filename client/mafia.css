@@ -22,9 +22,6 @@
     overflow-y:auto;
     position:relative;
 }
-
-
-
 #players{
     height: 400px;
     overflow-y:auto;
@@ -46,7 +43,6 @@ div.col-md-3 ul li {
     width: 33.3%;
     text-align: center;
 }
-
 div#players {
     padding: 10px;
 }
@@ -190,12 +186,6 @@ div#players br+button {
     }
     .access_text{
         font-size: 300%;
-    }
-    .mobile button{
-
-    }
-    .mobile input{
-
     }
     .title {
          font-size: 150%;

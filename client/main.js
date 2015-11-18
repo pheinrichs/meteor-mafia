@@ -756,7 +756,13 @@ Template.queue_list.events({
     messageNotification: function(){
       var game = getCurrentGame();
       var chat_messages = Chat.find({'game': game._id, createdAt: {$gt: Session.get("message_check")}}, {}).fetch();
-      return chat_messages.length;
+      if(chat_messages.length > 0){
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     },
     otherMafia: function(){
       var game = getCurrentGame();
@@ -838,7 +844,6 @@ Template.queue_list.events({
           // add new vote
           Players.update(votedPlayer._id, {$set: {votes: votedPlayer.votes + 1}});
           Players.update(player._id, {$set: {voteCast: myVote}});
-
         }
       }
 
@@ -948,6 +953,7 @@ Template.queue_list.events({
     },500);
 
     window.onresize = function(event) {
+      setTimeout(function() {
       var heights = window.innerHeight;
       var row_H = $('.row').height();
       var smsField_H = $('.new-message').height();
@@ -957,8 +963,9 @@ Template.queue_list.events({
       else if(window.innerWidth < 994 && window.innerWidth > 500){
          document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
       }else{
-        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
+        document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
       }
+    },150);
     }
 
     $('a[update-time="up"]').on('shown.bs.tab', function (e) {
