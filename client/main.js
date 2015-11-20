@@ -12,18 +12,19 @@ function stateMachine()
 {
   var gameID = Session.get("gameID");
   var playerID = Session.get("playerID");
-  
-  if(!gameID || !playerID){
-    Session.set("template_select","start_screen");
-    return;
+  if(!gameID || !playerID){  
+
+      Session.set("template_select","start_screen");
+      return;
   }
+  
   var game = Games.findOne(gameID);
   var player = Players.findOne(playerID);
   if (!game || !player){
-    Session.set("gameID", null);
-    Session.set("playerID", null);
-    Session.set("template_select", "start_screen");
-    return;
+      Session.set("gameID", null);
+      Session.set("playerID", null);
+      Session.set("template_select", "start_screen");
+      return;
   }
   if(game.state === "waitingForPlayers"){
     Session.set("template_select","queue_list");
@@ -93,6 +94,7 @@ function generateNewGame(game, name)
     createdAt: moment().format(),
     state: "waitingForPlayers",
     gameTime: "Day",
+    global: true,
     special: null,
     winner: null,
     isInspector: false,
@@ -113,6 +115,7 @@ function generateNewPlayer(game, name, pass)
     colour: 'sms_01',
     role: null,
     voteCast: null,
+    isNarrator: false,
     votes: 0,
     isMafia: false,
     alive: true
@@ -139,7 +142,7 @@ function createCustomArray(word,amount)
 function checkVotes(day)
 {
     var game = getCurrentGame();
-    var totalPlayers = Players.find({'gameID': game._id,  'alive': true},{}).fetch();
+    var totalPlayers = Players.find({'gameID': game._id,  'alive': true, 'isNarrator': false},{}).fetch();
 
     var totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
 
@@ -153,7 +156,7 @@ function checkVotes(day)
         Players.update(player._id, {$set: {alive: false}});
 
         totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
-        var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true},{}).fetch();
+        var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true, 'isNarrator': false},{}).fetch();
 
         if(totalMafia.length === 0)
         {
@@ -199,7 +202,7 @@ function checkVotes(day)
           Players.update(player._id, {$set: {alive: false}});
 
           totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
-          var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true},{}).fetch();
+          var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true, 'isNarrator': false},{}).fetch();
 
           if(totalMafia.length === 0)
           {
@@ -307,30 +310,57 @@ function mafiaNews(playerName)
   var game = getCurrentGame();
   var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + "."; 
   Meteor.subscribe('news',game._id);
-  News.insert({
-      name: playerName,
-      summary: "killed",
-      reason: reason,
-      createdAt: moment().format(), // current time
-      game: Session.get("gameID"), //get gameID for chat reference
-  });
+  if(game.global)
+  {
+    News.insert({
+        name: playerName,
+        summary: "killed",
+        reason: reason,
+        createdAt: moment().format(), // current time
+        game: Session.get("gameID"), //get gameID for chat reference
+    });
+  }
+  else
+  {
+    News.insert({
+        name: playerName,
+        summary: "killed",
+        reason: playername + " is out. Think of a fun story.",
+        createdAt: moment().format(), // current time
+        game: Session.get("gameID"), //get gameID for chat reference
+    });
+  }
 }
 
 function communityNews(playerName)
 {
   var game = getCurrentGame();
   Meteor.subscribe('news',game._id);
-  News.insert({
+  if(game.global)
+  {
+    News.insert({
+        name: playerName,
+        summary: "Voted",
+        reason: "The town was unanimous " + playerName + " has left town.",
+        createdAt: moment().format(), // current time
+        game: Session.get("gameID"), //get gameID for chat reference
+        });
+  }
+  else
+  {
+     News.insert({
       name: playerName,
-      summary: "exiled",
-      reason: "The town was unanimous " + playerName + " has left town.",
+      summary: "Voted",
+      reason: playerName + " is out.",
       createdAt: moment().format(), // current time
       game: Session.get("gameID"), //get gameID for chat reference
       });
+  }
 }
 
 function assignRoles(players)
 {
+  var game = getCurrentGame();
   var totalPlayers = players.length;
   var totalMafia = Math.floor(Math.sqrt(totalPlayers));
   var colours = ['sms_01','sms_02','sms_03','sms_04','sms_05',
@@ -338,6 +368,15 @@ function assignRoles(players)
   'sms_11','sms_12','sms_13','sms_14','sms_15',
   'sms_16','sms_17','sms_18','sms_19','sms_20'];
 
+  if(game.global == false)
+  {
+    var narr = 1;
+    console.log("narrator");
+  }
+  else{
+    var narr = 0;
+    console.log("No Narrator");
+  }
   if(totalPlayers >= 9 )
   {
     var totalInspector = 1;
@@ -349,16 +388,17 @@ function assignRoles(players)
     var totalInspector = 0;
   //  var totalDoctor = 0;
   }
-  var totalCivilian = totalPlayers - totalMafia - totalInspector;
+  var totalCivilian = totalPlayers - totalMafia - totalInspector - narr;
 
   var mafia = createCustomArray("mafioso",totalMafia);
  // var doctor = createCustomArray("doctor",totalDoctor);
+  var narrator = createCustomArray("narrator",narr);
   var inspector = createCustomArray("inspector",totalInspector);
   var civilian = createCustomArray("civilian",totalCivilian);
-  var roleList = mafia.concat(inspector,civilian);
+  var roleList = mafia.concat(inspector,civilian,narrator);
   var role = null;
   var shuffled_roles = shuffleArray(roleList);
-
+  console.log(shuffled_roles);
   players.forEach(function(player){
     role = shuffled_roles.pop();
     colour = colours.pop();
@@ -379,6 +419,7 @@ function leave()
   Session.set("gameID", null);
   Session.set("isHost", null);
   Session.set("playerID", null);
+  Session.set('urlCode', "/");
   Session.set("colour", 'sms_01');
   var player = getCurrentPlayer();
   if(player){
@@ -402,27 +443,29 @@ function reset_user()
   Session.set("playerID", null);
   Session.set("playerName", null);
   Session.set("colour", null);
+  Session.set('urlCode', "/");
   Session.set("playerID", null);
 }
   //evanbrumley Spyfall
   function trackUrlState() 
-  {
-    var accessCode = null;
-    var game = getCurrentGame();
-    if (game){
-      accessCode = game.accessCode;
-    } else {
-      accessCode = Session.get('urlAccessCode');
+    {
+      var accessCode = null;
+      var game = getCurrentGame();
+     
+      if (game){
+        accessCode = game.accessCode;
+      } else {
+        accessCode = Session.get('urlAccessCode');
+      }
+      var currentURL = '/';
+      if (accessCode){
+        currentURL += accessCode+'/';
+      }
+      window.history.pushState(null, null, currentURL);
     }
-    var currentURL = '/';
-    if (accessCode){
-      currentURL += accessCode+'/';
-    }
-    window.history.pushState(null, null, currentURL);
-  }
-  Tracker.autorun(trackUrlState);
+    Tracker.autorun(trackUrlState);
 
-Tracker.autorun(stateMachine);
+  Tracker.autorun(stateMachine);
 /*------------------------------End Functions----------------*/
 
 
@@ -492,6 +535,12 @@ Template.create_game.helpers({
   Template.join_game.helpers({
     isLoading: function() {
       return Session.get('loading');
+    },
+    hasUrlCode: function(){
+      if(Session.get('urlCode') != "/")
+      {
+        return Session.get('urlCode');
+      }
     }
   });
 
@@ -529,12 +578,14 @@ Template.create_game.helpers({
      
       if (game) 
       {
+
         Session.set("isHost", false);
          var players = Players.find({gameID: game._id}).fetch();
           if(players.length >= 20){
             FlashMessages.sendError("Game is full");
             return;
           }
+          Meteor.subscribe('news',game._id);
           //if first time joining
         if(game.state == "waitingForPlayers")
         {
@@ -633,6 +684,10 @@ Template.create_game.helpers({
           {
             Players.update(player._id, {$set: {isMafia: true}});
           }
+        if(player.role == "narrator")
+          {
+            Players.update(player._id, {$set: {isNarrator: true}});
+          }
       });
       return players;
     },
@@ -658,6 +713,14 @@ Template.queue_list.events({
         }
       }
     },
+    'change #global' : function (){
+       var game = getCurrentGame();
+       Games.update(game._id, {$set: {global: true}});
+   },
+   'change #local' : function (){
+      var game = getCurrentGame();
+       Games.update(game._id, {$set: {global: false}});
+   },
        'click #start-game': function () 
     {
       var game = getCurrentGame();
@@ -708,6 +771,10 @@ Template.queue_list.events({
       {
         return "During the day all civilians must decide to vote someone out. You will need more than half of everyones votes. Good luck.";
       }
+      else if(player.role === 'narrator')
+      {
+        return "It is your job to dictate the game.";
+      }
       else if(player.role === 'inspector')
       {
         return "During the night you have the opportunity to investigate another player's role. Choose carefully.";
@@ -716,6 +783,31 @@ Template.queue_list.events({
       {
         return "During the night you have the opportunity to save one player. Including yourself."
       }
+    },
+    global: function(){
+      var game = getCurrentGame();
+      var player = getCurrentPlayer();
+
+      if(!game.global)
+      {
+        if(player.isNarrator == true)
+        {
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      else
+      {
+        return true;
+      }
+    },
+
+    enabled: function(){
+      var game = getCurrentGame();
+      return game.global;
     },
     //visiblity per player role
     access: function(){
@@ -791,7 +883,7 @@ Template.queue_list.events({
     players: function(){
       var game = getCurrentGame();
       var currentPlayer = getCurrentPlayer();
-      var players = Players.find({'gameID': game._id}, {'sort': {'votes': -1}}).fetch();
+      var players = Players.find({'gameID': game._id, 'isNarrator':false}, {'sort': {'votes': -1}}).fetch();
       return players;
     },
     //chat
@@ -821,7 +913,7 @@ Template.queue_list.events({
       //day and night votes
       if(game.state == "day" || game.state == "night")
       {
-        if(myVote == player._id || player.alive == false || player.voteCast === myVote || votedPlayer.alive == false)
+        if(myVote == player._id || player.alive == false || player.role == "narrator" || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
         {
           // don't vote for yourself dummy
         }
@@ -850,7 +942,7 @@ Template.queue_list.events({
       //special phases votes
       else if(game.state == "inspection")
       {
-        if(myVote == player._id || player.alive == false || player.voteCast === myVote || votedPlayer.alive == false)
+        if(myVote == player._id || player.alive == false || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
         {
           // don't vote for yourself dummy
         }
@@ -913,8 +1005,12 @@ Template.queue_list.events({
       return game.special;
     }
   });
-
+ 
 /*--------------------------Renders---------------------*/
+  Template.main_menu.rendered = function(){
+    
+  };
+
   Template.queue_list.rendered = function(){
     $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
