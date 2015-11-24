@@ -82,9 +82,9 @@
 	  	<div class="input-fields mobile">
   		<input type="text" name="accessCode" id="accessCode" class="text access-code form-control" value="{{hasUrlCode}}" autofocus placeholder="Enter Session Code">
   		<br>
-  		<input type="text" name="name" id="name" class="text form-control" data-toggle="tooltip" title="Enter name exactly how it was created" autofocus placeholder="Enter Name">  
+  		<input type="text" name="name" id="name" class="text form-control" data-toggle="tooltip" autofocus placeholder="Enter Name">  
   		<br>
-		<input type="text" name="pass" id="pass" class="text form-control" data-toggle="tooltip" title="Enter name exactly how it was created"  placeholder="Enter Password" >  	
+		<input type="text" name="pass" id="pass" class="text form-control" data-toggle="tooltip" placeholder="Enter Password" >  	
     	<hr>
     	</div>
 		</div>
@@ -216,9 +216,20 @@
 			<div id="players" class="tab-pane fade">
 			<!--<a href="#" data-toggle="tooltip" title="Select person you might suspect is a mafioso. 50% or higher votes needed">Help?</a>-->
 				 {{#each players }}
+				 <div class="input-group">				
 			      <button id="{{_id}}" class="vote btn {{#if alive}}btn-info{{else}}btn-danger{{/if}} form-control" >
 			      	{{ name }} | {{votes}}
-			      </button>
+			      </button> 
+			      <span class="input-group-btn">
+			      	<button  id="{{_id}}" class="whoVoted btn btn-default" type="button" data-toggle="dropdown"><i id="{{_id}}" class="glyphicon glyphicon-info-sign"></i>
+			      	</button>
+			      	<ul class="dropdown-menu dropdown-menu-right">
+			      	{{#each check_votes}}
+					    <li><a href="#">{{name}}</a></li>
+					    {{/each}}
+					  </ul>
+			      </span>
+			     </div>
 			      <br>
 			    {{/each}}
 			</div>

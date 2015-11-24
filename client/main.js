@@ -371,11 +371,9 @@ function assignRoles(players)
   if(game.global == false)
   {
     var narr = 1;
-    console.log("narrator");
   }
   else{
     var narr = 0;
-    console.log("No Narrator");
   }
   if(totalPlayers >= 9 )
   {
@@ -398,7 +396,6 @@ function assignRoles(players)
   var roleList = mafia.concat(inspector,civilian,narrator);
   var role = null;
   var shuffled_roles = shuffleArray(roleList);
-  console.log(shuffled_roles);
   players.forEach(function(player){
     role = shuffled_roles.pop();
     colour = colours.pop();
@@ -408,9 +405,12 @@ function assignRoles(players)
 }
 function updateScroll() 
 {
-  $("#chat_sms_display").animate({ 
-    scrollTop: $('#chat_sms_display')[0].scrollHeight
-  }, 200);
+	if($('#chat_sms_display')[0].scrollHeight > $('#chat_sms_display').height())
+	{
+	  $("#chat_sms_display").animate({ 
+	    scrollTop: $('#chat_sms_display')[0].scrollHeight
+	  }, 200);
+	}
 }
 
 function leave()
@@ -742,6 +742,11 @@ Template.queue_list.events({
       var role = getCurrentPlayer();
       return role.role;
     },
+    check_votes: function(){
+    	var game = getCurrentGame();
+    	var checkvote = Session.get('check_votes');
+    	return Players.find({'gameID': game._id, 'voteCast':checkvote}, {}).fetch();
+    },
     isMobile: function(){
      if(window.innerWidth < 994){
          return true;
@@ -905,6 +910,10 @@ Template.queue_list.events({
 
   Template.day.events({
     //voting
+    'click .whoVoted' :function(event){
+    	var playerID = event.target.id;
+    	Session.set('check_votes', playerID);
+    },
     'click .vote' :function(event){
       var myVote = event.target.id;
       var votedPlayer = getVotedPlayer(myVote);
@@ -989,7 +998,6 @@ Template.queue_list.events({
       }
   });
 
-/*--------------------------Inspection---------------------*/
   Template.game_over.helpers({
     players: function(){
       var game = getCurrentGame();
@@ -1018,12 +1026,13 @@ Template.queue_list.events({
   };
 
   Template.day.rendered = function(){
+    var game = getCurrentGame();
     var scrolled = false;
     var heights = window.innerHeight;
     var row_H = $('.row').height();
     var smsField_H = $('.new-message').height();
     var shown_tab = false;
-
+    
     if(window.innerWidth <= 500){
        document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
     }
@@ -1033,7 +1042,8 @@ Template.queue_list.events({
     else{
       document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
     }
-
+   if(game.global)
+      {
     setInterval(function(){
       if(shown_tab){
       var divHeight = $('#chat_sms_display').height();
@@ -1047,7 +1057,7 @@ Template.queue_list.events({
         }
       }
     },500);
-
+  }
     window.onresize = function(event) {
       setTimeout(function() {
       var heights = window.innerHeight;
@@ -1091,11 +1101,11 @@ Template.queue_list.events({
 
   Template.join_game.rendered = function(){
     $('input[type=text][name=name]').tooltip({
-    placement: "right",
+    placement: "top",
     trigger: "focus"
   });
       $('input[type=text][name=pass]').tooltip({
-    placement: "right",
+    placement: "bottom",
     trigger: "focus"
   });
   };
@@ -1107,11 +1117,11 @@ Template.queue_list.events({
   Template.create_game.rendered = function(){
 
     $('input[type=text][name=name]').tooltip({
-    placement: "right",
+    placement: "top",
     trigger: "focus"
   });
       $('input[type=text][name=pass]').tooltip({
-    placement: "right",
+    placement: "bottom",
     trigger: "focus"
   });
   };

@@ -203,7 +203,9 @@ div#players br+button {
     .nav-tabs {
         font-size: 20px;
     }
-
+    .totals{
+        font-size: 12px;
+    }
     #briefing button, #briefing, #players button, #chat {
         height: 60px;
         font-size: 20px;
