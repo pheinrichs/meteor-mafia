@@ -443,15 +443,31 @@ function reset_user()
   Session.set("playerID", null);
   Session.set("playerName", null);
   Session.set("colour", null);
-  Session.set('urlCode', "/");
   Session.set("playerID", null);
 }
+
   //evanbrumley Spyfall
+  function hasHistoryApi () {
+
+  return !!(window.history && window.history.pushState);
+}
+
+if (hasHistoryApi()){
   function trackUrlState() 
     {
       var accessCode = null;
       var game = getCurrentGame();
-     
+      var url = window.location.pathname;
+
+      if(url.length > 1)
+      {
+        var url = url.replace(/\//g,'');
+        Session.set('urlCode',  url);
+      }
+      else
+      {
+        Session.set('urlCode',  null);
+      }
       if (game){
         accessCode = game.accessCode;
       } else {
@@ -464,8 +480,14 @@ function reset_user()
       window.history.pushState(null, null, currentURL);
     }
     Tracker.autorun(trackUrlState);
-
+  }
   Tracker.autorun(stateMachine);
+
+  FlashMessages.configure({
+  autoHide: true,
+  autoScroll: false
+});
+
 /*------------------------------End Functions----------------*/
 
 
@@ -1109,9 +1131,16 @@ Template.queue_list.events({
     trigger: "focus"
   });
   };
+
   Template.start_screen.rendered = function()
     {
-      reset_user();
+      if(Session.get('urlCode') != null)
+      {
+        if(Session.get('urlCode').length > 2)
+        {
+          Session.set('template_select', 'join_game');
+        }
+      }
     };
 
   Template.create_game.rendered = function(){
