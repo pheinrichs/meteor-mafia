@@ -91,14 +91,14 @@ function generateNewGame(game, name)
 {
   var game = {
     accessCode: createSessionID(),
-    createdAt: moment().format(),
+    createdAt: moment().toDate().getTime(),
     state: "waitingForPlayers",
     gameTime: "Day",
-    global: true,
-    special: null,
-    winner: null,
-    isInspector: false,
-    day: 1
+    global: true,//variable for local game or global
+    special: null, //This is the end game message
+    winner: null, //Who the winner is
+    waiting: "Players", //Display who we're waiting on
+    day: 1 // Length of Game
   };
   var gameID = Games.insert(game);
   game = Games.findOne(gameID);
@@ -109,16 +109,17 @@ function generateNewPlayer(game, name, pass)
   {
   var player = {
     gameID: game._id,
-    createdAt:  moment().format(),
+    createdAt:  moment().toDate().getTime(),
     name: name,
-    pass: pass,
-    colour: 'sms_01',
-    role: null,
-    voteCast: null,
-    isNarrator: false,
-    votes: 0,
-    isMafia: false,
-    alive: true
+    pass: pass, //password
+    colour: 'sms_01', //chat colour
+    role: null, //players role
+    voteCast: null, //who player voted
+    isNarrator: false, //Is player narrator
+    votes: 0, //how many votes player has
+    isMafia: false, //Is player mafia
+    healed: false, //has doctor healed player
+    alive: true //Is player alive
   };
 
   var playerID = Players.insert(player);
@@ -139,19 +140,22 @@ function createCustomArray(word,amount)
   return tempArray;
 }
 
+//this handles the votes and if someone wins
 function checkVotes(day)
 {
     var game = getCurrentGame();
     var totalPlayers = Players.find({'gameID': game._id,  'alive': true, 'isNarrator': false},{}).fetch();
 
     var totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
-
+    //load chat to purge
     var chats = Chat.find({'game': game._id},{}).fetch();
+    //get player with highest votes
     var player = Players.findOne({'gameID': game._id}, {'sort': {'votes': -1}});
+
     if(day == "day")
     {
      if(player.votes > (totalPlayers.length / 2 ))
-       {
+     {
         communityNews(player.name);
         Players.update(player._id, {$set: {alive: false}});
 
@@ -171,36 +175,56 @@ function checkVotes(day)
         }
         else
         {
-        Games.update(game._id, {$set: {gameTime: "Night"}});
-        totalPlayers.forEach(function(each)
-        {
-          Players.update(each._id, {$set: {votes: 0,voteCast: null}});
-        });
-        //purge chat at the end of every phase
-        chats.forEach(function(chat){
-          Chat.remove(chat._id);
-        });
+          Games.update(game._id, {$set: {gameTime: "Night"}});
+          totalPlayers.forEach(function(each)
+          {
+            Players.update(each._id, {$set: {votes: 0,voteCast: null}});
+          });
+          //purge chat at the end of every phase
+          chats.forEach(function(chat){
+            Chat.remove(chat._id);
+          });
 
-        var isInspectorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'inspector'},{}).fetch();
-
-        if(isInspectorStillAlive.length == 0)
-        {
-          Games.update(game._id, {$set: {state: 'night'}});
-        }
-        else
-        {
-          Games.update(game._id, {$set: {state: 'inspection'}});    
+          var isInspectorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'inspector'},{}).fetch();
+          var isDoctorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
+          console.log(isInspectorStillAlive.length);
+          console.log(isDoctorStillAlive.length);
+          if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 1)
+          {
+            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});    
+          }
+          else if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 0)
+          {
+            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});    
+          }
+          else if(isDoctorStillAlive.length == 1 && isInspectorStillAlive.length == 0 )
+          {
+            Games.update(game._id, {$set: {waiting: "Doctor",state: 'medic'}});
+          }
+          else
+          {
+            Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
+          }
         }
       }
+      else
+      {
+        Games.update(game._id,{$set:{waiting: "Players"}});
       }
     }
     else
     {
        if(player.votes == totalMafia.length)
         {
-          mafiaNews(player.name);
-          Players.update(player._id, {$set: {alive: false}});
-
+          if(player.healed == false)
+          {
+            mafiaNews(player.name,false);
+            Players.update(player._id, {$set: {alive: false}});
+          }
+          else
+          {
+            mafiaNews(player.name,true);
+          }
           totalMafia = Players.find({'gameID': game._id,'isMafia':true, 'alive':true},{}).fetch();
           var totalOther = Players.find({'gameID': game._id,'isMafia':false, 'alive':true, 'isNarrator': false},{}).fetch();
 
@@ -218,16 +242,16 @@ function checkVotes(day)
           }
           else
           {
-          Games.update(game._id, {$set: {gameTime: "Day",day: game.day + 1}});
-          totalPlayers.forEach(function(each)
+            Games.update(game._id, {$set: {gameTime: "Day",day: game.day + 1}});
+            totalPlayers.forEach(function(each)
           {
             Players.update(each._id, {$set: {votes: 0,voteCast: null}});
           });
           //purge chat at the end of every phase
-          chats.forEach(function(chat){
+            chats.forEach(function(chat){
             Chat.remove(chat._id);
           });
-          Games.update(game._id, {$set: {state: 'day'}});
+          Games.update(game._id, {$set: {waiting: "Players",state: 'day'}});
         }
         }
       }
@@ -301,14 +325,21 @@ function verbs()
   return item;
 }
 
-function mafiaNews(playerName)
+function mafiaNews(playerName, healed)
 {
   var death = deaths();
   var who = noun();
   var location = locations();
   var verb = verbs();
   var game = getCurrentGame();
-  var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + "."; 
+  if(!healed)
+  {
+    var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + ".";
+  }
+  else
+  {
+    var reason = "Last night " + playerName + " was " + verb + " " + location + " unfortunaly they " + death + " by " + who + "." + "Luckily a well trained doctor was around. So yeah, they didn't die. The plot Thickens...";
+  } 
   Meteor.subscribe('news',game._id);
   if(game.global)
   {
@@ -322,10 +353,19 @@ function mafiaNews(playerName)
   }
   else
   {
+    var reason = "";
+    if(healed)
+    {
+      reason = playername + " was targeted by the mafia but the doctor saved them. Think of a fun story."
+    }
+    else
+    {
+      reason = playername + " was killed by the mafia. Think of a fun story."
+    }
     News.insert({
         name: playerName,
         summary: "killed",
-        reason: playername + " is out. Think of a fun story.",
+        reason: reason,
         createdAt: moment().format(), // current time
         game: Session.get("gameID"), //get gameID for chat reference
     });
@@ -378,22 +418,21 @@ function assignRoles(players)
   if(totalPlayers >= 9 )
   {
     var totalInspector = 1;
-    Games.update(Session.get("gameID"), {$set: {isInspector: true}});
-   // var totalDoctor = 1;
+    var totalDoctor = 1;
   }
   else
   {
     var totalInspector = 0;
-  //  var totalDoctor = 0;
+    var totalDoctor = 0;
   }
-  var totalCivilian = totalPlayers - totalMafia - totalInspector - narr;
+  var totalCivilian = totalPlayers - totalMafia - totalDoctor - totalInspector - narr;
 
   var mafia = createCustomArray("mafioso",totalMafia);
- // var doctor = createCustomArray("doctor",totalDoctor);
+  var doctor = createCustomArray("doctor",totalDoctor);
   var narrator = createCustomArray("narrator",narr);
   var inspector = createCustomArray("inspector",totalInspector);
   var civilian = createCustomArray("civilian",totalCivilian);
-  var roleList = mafia.concat(inspector,civilian,narrator);
+  var roleList = mafia.concat(inspector,civilian,narrator,doctor);
   var role = null;
   var shuffled_roles = shuffleArray(roleList);
   players.forEach(function(player){
@@ -430,7 +469,7 @@ function leave()
 function kill_game()
 {
   var player = getCurrentPlayer();
-
+  Session.set('urlCode', "/");
   if (player){
     Players.remove(player._id);
   }
@@ -448,7 +487,6 @@ function reset_user()
 
   //evanbrumley Spyfall
   function hasHistoryApi () {
-
   return !!(window.history && window.history.pushState);
 }
 
@@ -806,7 +844,7 @@ Template.queue_list.events({
       {
         return "During the night you have the opportunity to investigate another player's role. Choose carefully.";
       }
-      else if(player.roler === 'doctor')
+      else if(player.role === 'doctor')
       {
         return "During the night you have the opportunity to save one player. Including yourself."
       }
@@ -888,6 +926,10 @@ Template.queue_list.events({
       var players = Players.find({'gameID': game._id,'isMafia':true}, {}).fetch();
       return players;
     },
+    waiting: function(){
+      var game = getCurrentGame();
+      return game.waiting;
+    },
     isAlive: function(){
       var alive = getCurrentPlayer();
       return alive.alive;
@@ -958,7 +1000,7 @@ Template.queue_list.events({
         }
         else if(player.voteCast !== myVote)
         {
-          //player changes vote
+          //player changes vote//
           //negate last vote
           var lastVote = getVotedPlayer(Session.get('myVote'));
           Players.update(Session.get('myVote'), {$set: {votes: lastVote.votes -1}});
@@ -983,12 +1025,26 @@ Template.queue_list.events({
           var isDoctorAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
           if(isDoctorAlive.length == 0)
           {
-            Games.update(game._id, {$set: {state: 'night'}});
+            Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
           }
           else
           {
-            Games.update(game._id, {$set: {state: 'medic'}});
+            Games.update(game._id, {$set: {waiting: "Doctor",state: 'medic'}});
           }
+        }
+      }
+      else if(game.state == "medic")
+      {
+        if(myVote == player._id || player.alive == false || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
+        {
+          // don't vote for yourself dummy
+        }
+        else
+        {
+          alert(votedPlayer.name + " is protected");
+          var isDoctorAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
+          Players.update(votedPlayer._id, {$set: {healed: true}});
+          Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
         }
       }
       //add more role phases here via else if

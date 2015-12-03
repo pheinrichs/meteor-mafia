@@ -150,6 +150,7 @@
  	   <div class="row-head">
  	   <div class="title-text">
 	    <h1 class="text-center title">{{time}}</h1>
+	    <div class="text-center">{{#if isAlive}}Waiting for {{waiting}}{{else}}You are dead.{{/if}}</div>
         <hr>
         </div>
         	<ul class="nav nav-tabs">
@@ -174,6 +175,7 @@
 		       	<h5 class="center">{{roleDescription}}</h5>
 		       	<hr>
 				<div class="center">{{time}}</div>
+				<div class="text-center">{{#if isAlive}}Waiting for {{waiting}}{{else}}You are dead.{{/if}}</div>
 		        {{#if isMafia}}
 		        <div class="center">
 			        All Mafioso:

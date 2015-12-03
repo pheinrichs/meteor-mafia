@@ -1,6 +1,7 @@
 
 function cleanUpGamesAndPlayers(){ 
-  var cutOff = moment().subtract(2, 'hours');
+  var cutOff = moment().subtract(2, 'hours').toDate().getTime();
+  console.log(cutOff);
   var numGamesRemoved = Games.remove({
     createdAt: {$lt: cutOff}
   });
@@ -24,9 +25,9 @@ Meteor.startup(function () {
     News.remove({});
 });
 
-var everyHour = new Cron(function() {
+var everyMinute = new Cron(function() {
     cleanUpGamesAndPlayers();
-}, {minute: 1});
+}, {});
 
 
     Meteor.publish('games', function(accessCode) {
