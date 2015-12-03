@@ -823,9 +823,13 @@ Template.queue_list.events({
       var player = getCurrentPlayer();
       return player.isMafia;
     },
+    
+    //update chat scroll
     updateScroll: function(){
         updateScroll();
     },
+
+    //Display roles description
     roleDescription: function(){
       var player = getCurrentPlayer();
       if(player.role === 'mafioso')
@@ -849,6 +853,7 @@ Template.queue_list.events({
         return "During the night you have the opportunity to save one player. Including yourself."
       }
     },
+    //if there is a narrator
     global: function(){
       var game = getCurrentGame();
       var player = getCurrentPlayer();
@@ -869,7 +874,7 @@ Template.queue_list.events({
         return true;
       }
     },
-
+    //global boolean
     enabled: function(){
       var game = getCurrentGame();
       return game.global;
@@ -910,6 +915,8 @@ Template.queue_list.events({
         return false;
       }
     },
+
+    //display icon if new messages in chat
     messageNotification: function(){
       var game = getCurrentGame();
       var chat_messages = Chat.find({'game': game._id, createdAt: {$gt: Session.get("message_check")}}, {}).fetch();
@@ -921,38 +928,61 @@ Template.queue_list.events({
         return false;
       }
     },
+    //all mafia
     otherMafia: function(){
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id,'isMafia':true}, {}).fetch();
       return players;
     },
+
+    //Who players are waiting for
     waiting: function(){
       var game = getCurrentGame();
       return game.waiting;
     },
+
+    //is player is alive function
     isAlive: function(){
       var alive = getCurrentPlayer();
       return alive.alive;
     },
+    //----------------------------------//
+    //Display current players in game
+    //----------------------------------//
     civilians: function(){
-      var game = getCurrentGame();
-      var Civilians = Players.find({'gameID': game._id,'role':'civilian'}, {}).fetch();
+      var Civilians = Players.find({'gameID': Session.get("gameID"),'role':'civilian'}, {}).fetch();
       return Civilians.length;
     },
     mafioso: function(){
-      var game = getCurrentGame();
-      var mafioso = Players.find({'gameID': game._id,'isMafia':true}, {}).fetch();
+      var mafioso = Players.find({'gameID': Session.get("gameID"),'isMafia':true}, {}).fetch();
       return mafioso.length;
     },
     inspector: function(){
-      var game = getCurrentGame();
-      var inspect = Players.find({'gameID': game._id,'role':'inspector'}, {}).fetch();
-      return inspect.length;
+      var inspect = Players.find({'gameID': Session.get("gameID"),'role':'inspector'}, {}).fetch();
+      if(inspect.length > 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     },
+    doctor: function(){
+      var doctor = Players.find({'gameID': Session.get("gameID"),'role':'doctor'}, {}).fetch();
+      if(doctor.length > 0)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    },
+    //----------------------------------//
+
     players: function(){
-      var game = getCurrentGame();
-      var currentPlayer = getCurrentPlayer();
-      var players = Players.find({'gameID': game._id, 'isNarrator':false}, {'sort': {'votes': -1}}).fetch();
+      var players = Players.find({'gameID': Session.get("gameID"), 'isNarrator':false}, {'sort': {'votes': -1}}).fetch();
       return players;
     },
     //chat

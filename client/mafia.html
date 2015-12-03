@@ -195,7 +195,8 @@
 				        Civilians: <br>{{ civilians }}
 				      </a>
 				       <a class="list-group-item">
-				        Inspector: <br>{{ inspector }}
+				        Doctor: {{#if doctor }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}<br>
+				        Inspector: {{#if inspector }}<i class="glyphicon glyphicon-ok"></i>{{else}}<i class="glyphicon glyphicon-remove"></i>{{/if}}
 				      </a>
 			    	</div>
 		        </div>
