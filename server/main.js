@@ -25,10 +25,9 @@ Meteor.startup(function () {
     News.remove({});
 });
 
-var everyMinute = new Cron(function() {
+var everyHour = new Cron(function() {
     cleanUpGamesAndPlayers();
-}, {});
-
+}, {minute: 1});
 
     Meteor.publish('games', function(accessCode) {
     return Games.find({"accessCode": accessCode});
