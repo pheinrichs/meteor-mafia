@@ -123,10 +123,20 @@
 	    	{{/if}}
 	    	<a href="#" data-toggle="tooltip" title="Minimum 5 players needed">Can't start?</a>
 	    	<hr>
+	    		{{#if isHost }}
 		    	<div class="access">
-		    	<h3> Game Link: </h3><input type="text" value="{{ accessLink }}" readonly />
+		    	<div class="alert alert-info">
+		    	Give other players this code below, or copy the URL link for easier access.
+		    	</div>
+		    	<h3> Game Code: </h3><input type="text" value="{{ accessLink }}" readonly />
+		    	<h3> URL</h3><input type="text" class="form-control url" value="{{ urlCode }}" readonly  />
 		    	</div>
 	    	<hr>
+	    	{{else}}
+	    		<div class="alert alert-info">
+		    	Waiting for host to start...
+		    	</div>
+	    	{{/if}}
 	    	<div class="queue">
 			<div class="list-group list-inline">
 		      {{#each players }}

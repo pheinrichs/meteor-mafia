@@ -7,6 +7,10 @@ function getAccessLink()
   }
   return game.accessCode;
 }
+function urlLink()
+{
+  return window.location.href;
+}
 //--
 function stateMachine()
 {
@@ -187,8 +191,6 @@ function checkVotes(day)
 
           var isInspectorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'inspector'},{}).fetch();
           var isDoctorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
-          console.log(isInspectorStillAlive.length);
-          console.log(isDoctorStillAlive.length);
           if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 1)
           {
             Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});    
@@ -754,6 +756,10 @@ Template.create_game.helpers({
     accessLink: function () 
     {
       return getAccessLink();
+    },
+    urlCode: function()
+    {
+      return urlLink();
     }
   });
 
@@ -1130,6 +1136,9 @@ Template.queue_list.events({
     $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
     });
+    $(document).ready(function(){
+      $("input[type=text]").focus(function() { $(this).select();});
+    });
   };
 
   Template.day.rendered = function(){
@@ -1182,6 +1191,7 @@ Template.queue_list.events({
     }
 
     $('a[update-time="up"]').on('shown.bs.tab', function (e) {
+      console.log("true");
       shown_tab = true;
       Session.set("message_check", moment().format());
       updateScroll();
