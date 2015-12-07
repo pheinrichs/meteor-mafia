@@ -707,6 +707,10 @@ Template.create_game.helpers({
     isLoading: function() {
       return Session.get('loading');
     },
+    global: function(){
+      var game = getCurrentGame();
+      return game.global;
+    },
     isHost: function(){
       if(Session.get('isHost'))
       {
@@ -720,13 +724,27 @@ Template.create_game.helpers({
     minPlayer: function(){
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id}, {}).fetch();
-      if(players.length >= 5)
+      if(game.global)
       {
-        return "enabled";
+        if(players.length >= 5)
+        {
+          return "enabled";
+        }
+        else
+        {
+          return "disabled";
+        }
       }
       else
       {
-        return "disabled";
+          if(players.length >= 6)
+        {
+          return "enabled";
+        }
+        else
+        {
+          return "disabled";
+        }
       }
     },
     players: function(){

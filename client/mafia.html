@@ -105,27 +105,40 @@
 		 	{{else}}
 	 	    <div class="center-block mobile">
 	 	    	{{#if isHost }} 
-	 	    	Game Type:
-	 	    	<div class="btn-group" data-toggle="buttons">
-				  <label class="btn btn-default active">
-				    <input type="radio" name="options" class="global" id="global" autocomplete="off" checked> Global
-				  </label>
-				  <label class="btn btn-default">
-				    <input type="radio" name="options" class="global" id="local" autocomplete="off"> Local
-				  </label>
-				</div>
-				<br>
-				<br>
+		 	    	Game Type:
+		 	    	<div class="btn-group" data-toggle="buttons">
+					  <label class="btn btn-default active">
+					    <input type="radio" name="options" class="global" id="global" autocomplete="off" checked> Global
+					  </label>
+					  <label class="btn btn-default">
+					    <input type="radio" name="options" class="global" id="local" autocomplete="off"> Local
+					  </label>
+					</div>
+					<br>
+					{{#if global}}
+					<br>
+					<div class="alert alert-info fade in" >
+						<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			    		<strong>Global:</strong><br> Minimum 5 players needed. No Narrator
+			    	</div>
+			    	{{else}}
+			    	<br>
+			    	<div class="alert alert-info fade in" >
+			    		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			    		<strong>Local:</strong><br>Minimum 6 players needed. One player will be the narrator
+			    		<br>
+			    		Select this option if you are all in the same room
+			    	</div>
+			    	{{/if}}
 	 	    	{{ /if}}
 	 	    	{{#if isHost }} <button id="start-game" class="btn btn-block btn-default" {{minPlayer}}>Start Game</button>{{ /if}}
 	    	  	<button id="leave" class="btn btn-block btn-default">Leave</button>
 	    	</div>
 	    	{{/if}}
-	    	<a href="#" data-toggle="tooltip" title="Minimum 5 players needed">Can't start?</a>
 	    	<hr>
 	    		{{#if isHost }}
 		    	<div class="access">
-		    	<div class="alert alert-info">
+		    	<div class="alert alert-warning">
 		    	Give other players this code below, or copy the URL link for easier access.
 		    	</div>
 		    	<h3> Game Code: </h3><input type="text" value="{{ accessLink }}" readonly />
@@ -137,7 +150,10 @@
 		    	Waiting for host to start...
 		    	</div>
 	    	{{/if}}
+
+	    	
 	    	<div class="queue">
+
 			<div class="list-group list-inline">
 		      {{#each players }}
 		      <a class="list-group-item">
@@ -147,6 +163,10 @@
 		    {{/each}}
 	    	</div>
 	    	</div>
+	    	<div class="alert alert-info fade in" >
+	    		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			    A Doctor and Inspector will be added if there are 9 or more players
+			</div>
 		</div>
 	</div>
 </template>
@@ -307,7 +327,7 @@
 	<div class="footer center-footer">
 		Inspired by <a href="http://spyfall.meteor.com/" target="_blank">evanbrumley Spyfall</a>, Based off the game <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)" target="_blank">Mafia</a>
 		 <br>
-		 Developed by Paul Daniel
+		 Developed by <a href="https://soundcloud.com/paul-daniels-notion"  target="_blank">Paul Daniel</a>
 	</div>
 	</div>
 </template>
