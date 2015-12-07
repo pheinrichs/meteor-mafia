@@ -356,11 +356,11 @@ function mafiaNews(playerName, healed)
     var reason = "";
     if(healed)
     {
-      reason = playername + " was targeted by the mafia but the doctor saved them. Think of a fun story."
+      reason = playerName + " was targeted by the mafia but the doctor saved them. Think of a fun story."
     }
     else
     {
-      reason = playername + " was killed by the mafia. Think of a fun story."
+      reason = playerName + " was killed by the mafia. Think of a fun story."
     }
     News.insert({
         name: playerName,
@@ -778,8 +778,7 @@ Template.queue_list.events({
        Games.update(game._id, {$set: {global: true}});
    },
    'change #local' : function (){
-      var game = getCurrentGame();
-       Games.update(game._id, {$set: {global: false}});
+       Games.update(Session.get("gameID"), {$set: {global: false}});
    },
        'click #start-game': function () 
     {
@@ -803,9 +802,8 @@ Template.queue_list.events({
       return role.role;
     },
     check_votes: function(){
-    	var game = getCurrentGame();
     	var checkvote = Session.get('check_votes');
-    	return Players.find({'gameID': game._id, 'voteCast':checkvote}, {}).fetch();
+    	return Players.find({'gameID': Session.get("gameID"), 'voteCast':checkvote}, {}).fetch();
     },
     isMobile: function(){
      if(window.innerWidth < 994){
@@ -823,7 +821,7 @@ Template.queue_list.events({
       var player = getCurrentPlayer();
       return player.isMafia;
     },
-    
+
     //update chat scroll
     updateScroll: function(){
         updateScroll();
@@ -891,7 +889,8 @@ Template.queue_list.events({
       {
         return true;
       }
-      else if(game.state == "night" && player.isMafia == false){
+      else if(game.state == "night" && player.isMafia == false)
+      {
         return false;
       }
       else if(game.state == "inspection" && player.role == "inspector")
@@ -918,9 +917,9 @@ Template.queue_list.events({
 
     //display icon if new messages in chat
     messageNotification: function(){
-      var game = getCurrentGame();
-      var chat_messages = Chat.find({'game': game._id, createdAt: {$gt: Session.get("message_check")}}, {}).fetch();
-      if(chat_messages.length > 0){
+      var chat_messages = Chat.find({'game': Session.get("gameID"), createdAt: {$gt: Session.get("message_check")}}, {}).fetch();
+      if(chat_messages.length > 0)
+      {
         return true;
       }
       else
@@ -930,8 +929,7 @@ Template.queue_list.events({
     },
     //all mafia
     otherMafia: function(){
-      var game = getCurrentGame();
-      var players = Players.find({'gameID': game._id,'isMafia':true}, {}).fetch();
+      var players = Players.find({'gameID': Session.get("gameID"),'isMafia':true}, {}).fetch();
       return players;
     },
 
@@ -994,9 +992,12 @@ Template.queue_list.events({
     },
     isInspector: function(){
       var player = getCurrentPlayer();
-      if(player.role == "inspector"){
+      if(player.role == "inspector")
+      {
         return true;
-      }else{
+      }
+      else
+      {
         return false;
       }
     },
@@ -1072,7 +1073,6 @@ Template.queue_list.events({
         else
         {
           alert(votedPlayer.name + " is protected");
-          var isDoctorAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
           Players.update(votedPlayer._id, {$set: {healed: true}});
           Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
         }
@@ -1108,8 +1108,7 @@ Template.queue_list.events({
 
   Template.game_over.helpers({
     players: function(){
-      var game = getCurrentGame();
-      var players = Players.find({'gameID': game._id}, {'sort': {'name': -1}}).fetch();
+      var players = Players.find({'gameID': Session.get("gameID")}, {'sort': {'name': -1}}).fetch();
       return players;
     },
     winner: function(){
@@ -1171,13 +1170,13 @@ Template.queue_list.events({
       var heights = window.innerHeight;
       var row_H = $('.row').height();
       var smsField_H = $('.new-message').height();
-       if(window.innerWidth <= 500){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
+      if(window.innerWidth < 994)
+      {
+        document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
       }
-      else if(window.innerWidth < 994 && window.innerWidth > 500){
-         document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
-      }else{
-        document.getElementById("chat_sms_display").style.height = heights-row_H-75 + "px";
+      else
+      {
+        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
       }
     },150);
     }

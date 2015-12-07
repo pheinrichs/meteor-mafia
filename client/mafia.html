@@ -153,6 +153,7 @@
 	    <div class="text-center">{{#if isAlive}}Waiting for {{waiting}}{{else}}You are dead.{{/if}}</div>
         <hr>
         </div>
+        <div class="tabMenu">
         	<ul class="nav nav-tabs">
        		 <li><a data-toggle="tab" update-time="down" href="#briefing">Briefing </a></li>
        		 {{#if access}}
@@ -162,11 +163,9 @@
 	    	 {{/if}}
 	    	 {{/if}}
 	    	 </ul>
-		<hr>
-		<br>
+		</div>
 		</div>
 		<div class="tab-content">
-			
 			<div id="briefing" class="tab-pane fade access">
 		       	<h3 class="center">{{ myName }}</h3>
 		       	<br>
