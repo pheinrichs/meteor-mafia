@@ -1,7 +1,6 @@
 
 function cleanUpGamesAndPlayers(){ 
   var cutOff = moment().subtract(2, 'hours').toDate().getTime();
-  console.log(cutOff);
   var numGamesRemoved = Games.remove({
     createdAt: {$lt: cutOff}
   });
