@@ -21,7 +21,7 @@
 <!-- Start Screen -->
 <template name="start_screen">
 	<div class="row">
- 	   <div class="col-md-3 col-md-offset-4 mobile">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
  	    <h1 class="text-center title">Mafia</h1>
  	    <hr>
  	    <div class="">
@@ -37,7 +37,7 @@
 <!-- Create Game -->
 <template name="create_game">
 	<div class="row ">
- 	   <div class="col-md-3 col-md-offset-4 mobile">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
 	    <h1 class="text-center title">Create Game</h1>
 	 	<hr>
 	 	{{#if isLoading}}
@@ -65,7 +65,7 @@
 <!-- Join Game -->
 <template name="join_game">
 	<div class="row ">
- 	   <div class="col-md-3 col-md-offset-4 mobile">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
  	    <h1 class="text-center title">Join Game</h1>
  	    <hr>
  	    {{#if isLoading}}
@@ -95,7 +95,7 @@
 <!-- Queue to wait for players -->
 <template name="queue_list">
 	<div class="row ">
- 	   <div class="col-md-3 col-md-offset-4 mobile">
+ 	   <div class="col-md-3 mobile" style="float:none; margin:auto;">
 	 	    <h1 class="text-center title loading">Player List</h1>
 	 	    <hr>
 	 	    {{#if isLoading}}
@@ -142,10 +142,10 @@
 	    		{{#if isHost }}
 		    	<div class="access">
 		    	<div class="alert alert-warning">
-		    	Give other players this code below, or copy the URL link for easier access.
+		    	Give other players the code below, or copy the URL link for easier access.
 		    	</div>
-		    	<h3> Game Code: </h3><input type="text" value="{{ accessLink }}" readonly />
-		    	<h3> URL</h3><input type="text" class="form-control url" value="{{ urlCode }}" readonly  />
+		    	<h3> Game Code: </h3><input type="text" value="{{ accessLink }}" readonly onClick="this.setSelectionRange(0, this.value.length)"/>
+		    	<h3> URL</h3><input  type="text" class="form-control url" value="{{ urlCode }}" readonly onClick="this.setSelectionRange(0, this.value.length)"/>
 		    	</div>
 	    	<hr>
 	    	{{else}}
@@ -181,7 +181,7 @@
 	<div class="row ">
 		<!-- Briefing-->
 		{{checkVotes}}
- 	   <div class="col-md-3 col-md-offset-4">
+ 	   <div class="col-md-3" style="float:none; margin:auto;">
  	   <div class="row-head">
  	   <div class="title-text">
  	   {{#if enabled}}
@@ -316,8 +316,8 @@
 
 <!-- Game Over -->
 <template name="game_over">
-	<div class="row ">
-	<div class="col-md-3 col-md-offset-4">
+	<div class="row">
+	<div class="col-md-3" style="float:none; margin:auto;">
 		<h1 class="text-center title whiteText">{{ winner }} Wins</h1>
 		<hr>
 		<div class="players">
@@ -325,8 +325,9 @@
 		{{ special }}
 		</div>
 		{{#each players}}
-		{{ name }} - {{ role }}
-		<br>
+		<div  class="alert {{#if isMa isMafia}}alert-warning{{else}}alert-success{{/if}} fade in">
+			 <strong>{{ name }}</strong><br> {{ role }} | {{#if isAlive alive}}Alive{{else}}Dead{{/if}}
+	    </div>
 		{{/each}}
 		</div>
 	</div>
@@ -335,7 +336,7 @@
 
 <!-- Footers -->
 <template name="footer">
-	<div class="col-md-3 col-md-offset-4">
+	<div class="col-md-3" style="float:none; margin:auto;">
 	<div class="footer center-footer">
 		Inspired by <a href="http://spyfall.meteor.com/" target="_blank">evanbrumley Spyfall</a>, Based off the game <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)" target="_blank">Mafia</a>
 		 <br>

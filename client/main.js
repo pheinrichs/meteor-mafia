@@ -642,24 +642,31 @@ Template.create_game.helpers({
       {
 
         Session.set("isHost", false);
-         var players = Players.find({gameID: game._id}).fetch();
-          if(players.length >= 20){
-            FlashMessages.sendError("Game is full");
-            return;
-          }
-          Meteor.subscribe('news',game._id);
           //if first time joining
         if(game.state == "waitingForPlayers")
         {
           Session.set("loading", true);
           Meteor.subscribe('players',game._id,  function onReady(){
           Session.set("loading", false);
+
+          var checkForSameName = Players.find({'gameID': game._id, 'name': playerName}).fetch();
+          if(checkForSameName.length > 0){
+            FlashMessages.sendError("That name is already taken.");
+            return;
+          }
+          var playerLimit = Players.find({'gameID': game._id}).fetch();
+          if(playerLimit.length >= 20){
+            FlashMessages.sendError("Game is full");
+            return;
+          }
+
           player = generateNewPlayer(game, playerName, pass);
           Session.set('urlAccessCode', null);
           Session.set("gameID", game._id);
           Session.set("message_check", moment().format());
           Session.set("playerID", player._id);
           Session.set("playerName",player.name);
+          Meteor.subscribe('news',game._id);
           });
         }
         else
@@ -677,6 +684,7 @@ Template.create_game.helpers({
               Session.set("playerID", oldPlayer._id);
               Session.set("message_check", moment().format());
               Session.set("playerName",oldPlayer.name);
+              Meteor.subscribe('news',game._id);
             }
             else
             {
@@ -721,6 +729,7 @@ Template.create_game.helpers({
         return false;
       }
     },
+    //disable the game from starting if to little players
     minPlayer: function(){
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id}, {}).fetch();
@@ -1139,6 +1148,26 @@ Template.queue_list.events({
       var winner = getCurrentGame();
       return winner.winner;
     },
+    isMa:function(mafia){
+      if(mafia)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    },
+    isAlive: function(alive){
+      if(alive)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    },
     special: function(){
       var game = getCurrentGame();
       return game.special;
@@ -1146,16 +1175,9 @@ Template.queue_list.events({
   });
  
 /*--------------------------Renders---------------------*/
-  Template.main_menu.rendered = function(){
-    
-  };
-
   Template.queue_list.rendered = function(){
     $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
-    });
-    $(document).ready(function(){
-      $("input[type=text]").focus(function() { $(this).select();});
     });
   };
 
