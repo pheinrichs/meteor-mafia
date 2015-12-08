@@ -417,16 +417,25 @@ function assignRoles(players)
   else{
     var narr = 0;
   }
-  if(totalPlayers >= 9 )
+
+  if(Session.get('want_doctor'))
   {
-    var totalInspector = 1;
     var totalDoctor = 1;
   }
   else
   {
-    var totalInspector = 0;
     var totalDoctor = 0;
   }
+
+  if(Session.get('want_inspec'))
+  {
+    var totalInspector = 1;
+  }
+  else
+  {
+    var totalInspector = 0;
+  }
+  
   var totalCivilian = totalPlayers - totalMafia - totalDoctor - totalInspector - narr;
 
   var mafia = createCustomArray("mafioso",totalMafia);
@@ -587,6 +596,8 @@ Template.create_game.helpers({
         Session.set("gameID", game._id);
         Session.set("message_check", moment().format());
         Session.set("playerID", player._id);
+        Session.set('want_doctor', false);
+        Session.set('want_inspec', false);
         Session.set("playerName",player.name);
         Session.set("template_select", "queue_list");
     });
@@ -807,13 +818,24 @@ Template.queue_list.events({
       }
     },
     'change #global' : function (){
-       var game = getCurrentGame();
-       Games.update(game._id, {$set: {global: true}});
+       Games.update(Session.get("gameID"), {$set: {global: true}});
    },
    'change #local' : function (){
        Games.update(Session.get("gameID"), {$set: {global: false}});
    },
-       'click #start-game': function () 
+   'change #doc_on' : function(){
+      Session.set('want_doctor', true);
+   },
+   'change #doc_off' : function(){
+      Session.set('want_doctor', false);
+   },
+   'change #ins_on' : function(){
+      Session.set('want_inspec', true);
+   },
+   'change #ins_off' : function(){
+      Session.set('want_inspec', false);
+   },
+    'click #start-game': function () 
     {
       var game = getCurrentGame();
       var players = Players.find({'gameID': game._id}, {'sort': {'createdAt': 1}}).fetch();

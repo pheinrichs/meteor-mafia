@@ -106,12 +106,32 @@
 	 	    <div class="center-block mobile">
 	 	    	{{#if isHost }} 
 		 	    	Game Type:
-		 	    	<div class="btn-group" data-toggle="buttons">
+		 	    	<div class="btn-group btn-group-justified" data-toggle="buttons">
 					  <label class="btn btn-default active">
 					    <input type="radio" name="options" class="global" id="global" autocomplete="off" checked> Global
 					  </label>
 					  <label class="btn btn-default">
 					    <input type="radio" name="options" class="global" id="local" autocomplete="off"> Local
+					  </label>
+					</div>
+					<br>
+					Doctor:
+					<div class="btn-group btn-group-justified" data-toggle="buttons">
+					  <label class="btn btn-default">
+					    <input type="radio" name="options" class="Doctor " id="doc_on" autocomplete="off" > On
+					  </label>
+					  <label class="btn btn-default active" >
+					    <input type="radio" name="options" class="Doctor" id="doc_off" autocomplete="off" > Off
+					  </label>
+					</div>
+					<br>
+					Inspector:
+					<div class="btn-group btn-group-justified" data-toggle="buttons">
+					  <label class="btn btn-default">
+					    <input type="radio" name="options" class="Inspec" id="ins_on" autocomplete="off" > On
+					  </label>
+					  <label class="btn btn-default active">
+					    <input type="radio" name="options" class="Inspec" id="ins_off" autocomplete="off" > Off
 					  </label>
 					</div>
 					<br>
@@ -168,10 +188,6 @@
 		    {{/each}}
 	    	</div>
 	    	</div>
-	    	<div class="alert alert-info fade in" >
-	    		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			    A Doctor and Inspector will be added if there are 9 or more players
-			</div>
 		</div>
 	</div>
 </template>
