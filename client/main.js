@@ -90,7 +90,25 @@ function getVotedPlayer(id)
     return Players.findOne(id);
   }
 }
+function chatHeight()
+{
+	var game = getCurrentGame();
+    var scrolled = false;
+    var heights = window.innerHeight;
+    var row_H = $('.row').height();
+    var smsField_H = $('.new-message').height();
+    var shown_tab = false;
 
+	if(window.innerWidth <= 500){
+       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
+    }
+    else if(window.innerWidth < 994 && window.innerWidth > 500){
+       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
+    }
+    else{
+      document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
+    }
+}
 function generateNewGame(game, name)
 {
   var game = {
@@ -201,17 +219,20 @@ function checkVotes(day)
           }
           else if(isDoctorStillAlive.length == 1 && isInspectorStillAlive.length == 0 )
           {
+          	chatHeight();
             Games.update(game._id, {$set: {waiting: "Doctor",state: 'medic'}});
           }
           else
           {
             Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
+            chatHeight();
           }
         }
       }
       else
       {
         Games.update(game._id,{$set:{waiting: "Players"}});
+        chatHeight();
       }
     }
     else
@@ -254,6 +275,7 @@ function checkVotes(day)
             Chat.remove(chat._id);
           });
           Games.update(game._id, {$set: {waiting: "Players",state: 'day'}});
+          chatHeight();
         }
         }
       }
@@ -1211,15 +1233,15 @@ Template.queue_list.events({
     var smsField_H = $('.new-message').height();
     var shown_tab = false;
     
-    if(window.innerWidth <= 500){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
-    }
-    else if(window.innerWidth < 994 && window.innerWidth > 500){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
-    }
-    else{
-      document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
-    }
+   if(window.innerWidth < 994)
+      {
+        document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
+      }
+      else
+      {
+        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
+      }
+ 
    if(game.global)
       {
     setInterval(function(){
@@ -1247,7 +1269,7 @@ Template.queue_list.events({
       }
       else
       {
-        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
+        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-200 + "px";
       }
     },150);
     }
