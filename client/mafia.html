@@ -221,7 +221,7 @@
 		</div>
 		</div>
 		<div class="tab-content">
-			<div id="briefing" class="tab-pane fade access">
+			<div id="briefing" class="tab-pane fade access active">
 		       	<h3 class="center">{{ myName }}</h3>
 		       	<br>
 		       	<h4 class="center">Current Role:{{#if isAlive}} {{else}} Dead {{/if}} {{role}}</h4>
@@ -297,10 +297,10 @@
 
 			<!-- Chat-->
 			{{#if enabled}}
-				{{#if access}}
-				<div id="chat" class="tab-pane fade">
+				<div id="chat" class="tab-pane fade chat-row">
 				<!--<a href="#" data-toggle="tooltip" title="You're dead, dead people don't talk.">Cant type?</a>-->
 					<div id="chat_sms_display" class="chat_sms_display">
+					{{#if access}} 
 					    {{#each chat}}
 						    <div class="message_row">
 						        <div class="user_name">
@@ -311,7 +311,9 @@
 						    	</div>
 							</div>
 					    {{/each}}
+					{{/if}}
 						</div>
+						{{#if access}} 
 						{{#if isAlive}}  
 						<form class="new-message">
 						<div class="input-group">
@@ -322,8 +324,8 @@
 						</div>
 					    </form>
 					    {{/if}}
+					    {{/if}}
 					</div>
-					{{/if}}
 				{{/if}}
 			</div>
 		</div>

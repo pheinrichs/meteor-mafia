@@ -90,25 +90,6 @@ function getVotedPlayer(id)
     return Players.findOne(id);
   }
 }
-function chatHeight()
-{
-	var game = getCurrentGame();
-    var scrolled = false;
-    var heights = window.innerHeight;
-    var row_H = $('.row').height();
-    var smsField_H = $('.new-message').height();
-    var shown_tab = false;
-
-	if(window.innerWidth <= 500){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
-    }
-    else if(window.innerWidth < 994 && window.innerWidth > 500){
-       document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
-    }
-    else{
-      document.getElementById("chat_sms_display").style.height = heights-row_H-60 + "px";
-    }
-}
 function generateNewGame(game, name)
 {
   var game = {
@@ -211,28 +192,25 @@ function checkVotes(day)
           var isDoctorStillAlive = Players.find({'gameID': game._id,  'alive': true, 'role': 'doctor'},{}).fetch();
           if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 1)
           {
-            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});    
+            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});  
           }
           else if (isInspectorStillAlive.length == 1 && isDoctorStillAlive.length == 0)
           {
-            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}});    
+            Games.update(game._id, {$set: {waiting: "Inspector",state: 'inspection'}}); 
           }
           else if(isDoctorStillAlive.length == 1 && isInspectorStillAlive.length == 0 )
           {
-          	chatHeight();
             Games.update(game._id, {$set: {waiting: "Doctor",state: 'medic'}});
           }
           else
           {
             Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
-            chatHeight();
           }
         }
       }
       else
       {
         Games.update(game._id,{$set:{waiting: "Players"}});
-        chatHeight();
       }
     }
     else
@@ -275,7 +253,6 @@ function checkVotes(day)
             Chat.remove(chat._id);
           });
           Games.update(game._id, {$set: {waiting: "Players",state: 'day'}});
-          chatHeight();
         }
         }
       }
@@ -484,7 +461,19 @@ function updateScroll()
 	  }, 200);
 	}
 }
-
+function chatHeight()
+{
+  var heights = window.innerHeight;
+  var row_H = $('.row').height();
+      if(window.innerWidth < 994)
+      {
+        document.getElementById("chat_sms_display").style.height = heights - row_H + "px";
+      }
+      else
+      {
+        document.getElementById("chat_sms_display").style.height = heights * .55 + "px";
+      }
+}
 function leave()
 {
   Session.set('urlAccessCode', null);
@@ -1013,7 +1002,24 @@ Template.queue_list.events({
     //Who players are waiting for
     waiting: function(){
       var game = getCurrentGame();
-      return game.waiting;
+      var player = getCurrentPlayer();
+      if(game.waiting == 'Mafia' && player.isMafia == true)
+      {
+        return "you!";
+      }
+      else if (game.waiting == 'Doctor' && player.role == 'doctor')
+      {
+        return "you!";
+      }
+      else if (game.waiting == "Inspector" && player.role == 'inspector')
+      {
+        return "you!";
+      }
+      else
+      {
+        return game.waiting;
+      }
+      
     },
 
     //is player is alive function
@@ -1134,10 +1140,12 @@ Template.queue_list.events({
           if(isDoctorAlive.length == 0)
           {
             Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
+            chatHeight();
           }
           else
           {
             Games.update(game._id, {$set: {waiting: "Doctor",state: 'medic'}});
+            chatHeight();
           }
         }
       }
@@ -1152,6 +1160,7 @@ Template.queue_list.events({
           alert(votedPlayer.name + " is protected");
           Players.update(votedPlayer._id, {$set: {healed: true}});
           Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
+          chatHeight();
         }
       }
       //add more role phases here via else if
@@ -1226,22 +1235,24 @@ Template.queue_list.events({
   };
 
   Template.day.rendered = function(){
+    $('.nav-tabs a:first').tab('show');
+
     var game = getCurrentGame();
     var scrolled = false;
     var heights = window.innerHeight;
     var row_H = $('.row').height();
     var smsField_H = $('.new-message').height();
     var shown_tab = false;
-    
-   if(window.innerWidth < 994)
-      {
-        document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
-      }
-      else
-      {
-        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-75 + "px";
-      }
- 
+
+    if(window.innerWidth < 994)
+    {
+      document.getElementById("chat_sms_display").style.height = heights - row_H - 30 + "px";
+    }
+    else
+    {
+    document.getElementById("chat_sms_display").style.height = heights * .55  + "px";
+    }
+
    if(game.global)
       {
     setInterval(function(){
@@ -1259,23 +1270,20 @@ Template.queue_list.events({
     },500);
   }
     window.onresize = function(event) {
-      setTimeout(function() {
       var heights = window.innerHeight;
       var row_H = $('.row').height();
       var smsField_H = $('.new-message').height();
       if(window.innerWidth < 994)
       {
-        document.getElementById("chat_sms_display").style.height = heights-row_H-30 + "px";
+        document.getElementById("chat_sms_display").style.height = heights - row_H + "px";
       }
       else
       {
-        document.getElementById("chat_sms_display").style.height = (heights - (heights / 4))-row_H-200 + "px";
+        document.getElementById("chat_sms_display").style.height = heights * .55 + "px";
       }
-    },150);
     }
 
     $('a[update-time="up"]').on('shown.bs.tab', function (e) {
-      console.log("true");
       shown_tab = true;
       Session.set("message_check", moment().format());
       updateScroll();

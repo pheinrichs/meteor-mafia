@@ -158,8 +158,11 @@ div#players br+button {
     .queue a{
         width:100%;
     }
-    .title-text{
+    .title-text h1{
         display: none;
+    }
+    .title-text{
+        font-size: 150%;
     }
      #players {
         height: 700px;
