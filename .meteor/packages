@@ -20,3 +20,4 @@ insecure                # Allow all DB writes from clients (for prototyping)
 momentjs:moment
 chfritz:easycron
 mrt:flash-messages
+datariot:ganalytics

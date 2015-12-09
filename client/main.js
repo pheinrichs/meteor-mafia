@@ -167,14 +167,18 @@ function checkVotes(day)
 
         if(totalMafia.length === 0)
         {
-          Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
+            GAnalytics.event("game-events", "civilianswin-day-gameend");
+            Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
         }
         else if(totalOther.length === 0)
         {
-           Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
+        	GAnalytics.event("game-events", "mafiawin-day-gameend");
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
         }
-        else if(totalMafia.length === totalOther.length){
-           Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
+        else if(totalMafia.length === totalOther.length)
+        {
+        	GAnalytics.event("game-events", "mafiawin-day-gameend");
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
         }
         else
         {
@@ -231,15 +235,18 @@ function checkVotes(day)
 
           if(totalMafia.length === 0)
           {
+          	GAnalytics.event("game-events", "civilianswin-night-gameend");
             Games.update(game._id, {$set: {winner: "Civilians",special: "No Mafia remain in the town.",state: 'game_over'}});
           }
           else if(totalOther.length === 0)
           {
-             Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
+          	GAnalytics.event("game-events", "mafiawin-night-gameend");
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafia were the last ones standing.",state: 'game_over'}});
           }
           else if(totalMafia.length === totalOther.length)
           {
-             Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
+          	GAnalytics.event("game-events", "mafiawin-night-gameend");
+            Games.update(game._id, {$set: {winner: "The Mafia",special: "The Mafioso were equal to the Civilians, Mafia win.",state: 'game_over'}});
           }
           else
           {
@@ -411,14 +418,18 @@ function assignRoles(players)
 
   if(game.global == false)
   {
+  	GAnalytics.event("game-events", "localgame");
     var narr = 1;
   }
-  else{
+  else
+  {
+  	GAnalytics.event("game-events", "globalgame");
     var narr = 0;
   }
 
   if(Session.get('want_doctor'))
   {
+  	GAnalytics.event("game-events", "hasdoctor");
     var totalDoctor = 1;
   }
   else
@@ -428,6 +439,7 @@ function assignRoles(players)
 
   if(Session.get('want_inspec'))
   {
+  	GAnalytics.event("game-events", "hasinspector");
     var totalInspector = 1;
   }
   else
@@ -571,6 +583,7 @@ Template.create_game.helpers({
     },
     'click #submit': function (event) 
     {
+      GAnalytics.event("game-events", "creategame");
       event.preventDefault();
       Session.set("isHost", true);
       var playerName = $('#name').val();
@@ -622,6 +635,7 @@ Template.create_game.helpers({
     },
     'click #submit': function (event) 
     {
+      
       event.preventDefault();
 
       var accessCode = $('#accessCode').val();
@@ -661,14 +675,16 @@ Template.create_game.helpers({
           var checkForSameName = Players.find({'gameID': game._id, 'name': playerName}).fetch();
           if(checkForSameName.length > 0){
             FlashMessages.sendError("That name is already taken.");
+            GAnalytics.event("game-events", "invalid-nametaken-joingame");
             return;
           }
           var playerLimit = Players.find({'gameID': game._id}).fetch();
           if(playerLimit.length >= 20){
             FlashMessages.sendError("Game is full");
+            GAnalytics.event("game-events", "invalid-gamefull-joingame");
             return;
           }
-
+          GAnalytics.event("game-events", "new-joingame");
           player = generateNewPlayer(game, playerName, pass);
           Session.set('urlAccessCode', null);
           Session.set("gameID", game._id);
@@ -681,31 +697,34 @@ Template.create_game.helpers({
         else
           //if game in progress
         {
-          Session.set("loading", true);
-          Meteor.subscribe('players', game._id, function onReady()
-          {
-            Session.set("loading", false);
-            var oldPlayer = Players.findOne({'gameID': game._id,'name': playerName,'pass': pass}, {});
-            if(oldPlayer)
-            {
-              Session.set('urlAccessCode', null);
-              Session.set("gameID", game._id);
-              Session.set("playerID", oldPlayer._id);
-              Session.set("message_check", moment().format());
-              Session.set("playerName",oldPlayer.name);
-              Meteor.subscribe('news',game._id);
-            }
-            else
-            {
-              FlashMessages.sendError("No player found with that information");
-              Session.set("loading", false);
-            }
+            Session.set("loading", true);
+            Meteor.subscribe('players', game._id, function onReady()
+        	{
+	            Session.set("loading", false);
+	            var oldPlayer = Players.findOne({'gameID': game._id,'name': playerName,'pass': pass}, {});
+	            if(oldPlayer)
+	            {
+	            	GAnalytics.event("game-events", "rejoin-joingame");
+	                Session.set('urlAccessCode', null);
+	                Session.set("gameID", game._id);
+	                Session.set("playerID", oldPlayer._id);
+	                Session.set("message_check", moment().format());
+	                Session.set("playerName",oldPlayer.name);
+	                Meteor.subscribe('news',game._id);
+	            }
+	            else
+	            {
+	            	GAnalytics.event("game-events", "invalid-rejoin-joingame");
+	                FlashMessages.sendError("No player found with that information");
+	                Session.set("loading", false);
+	            }
           });
         }
       }
       else
       {
         Session.set("loading", false);
+        GAnalytics.event("game-events", "invalid-code-joingame");
         FlashMessages.sendError("invalid access code");
       }
     });
@@ -1134,6 +1153,7 @@ Template.queue_list.events({
           }
         }
       }
+
       else if(game.state == "medic")
       {
         if(myVote == player._id || player.alive == false || player.voteCast === myVote || votedPlayer.alive == false || votedPlayer.role == "narrator")
@@ -1212,6 +1232,10 @@ Template.queue_list.events({
   });
  
 /*--------------------------Renders---------------------*/
+  Template.start_screen.rendered = function(){
+  	GAnalytics.pageview("/");
+  }; 
+
   Template.queue_list.rendered = function(){
     $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip({placement:'right'}); 
@@ -1237,8 +1261,8 @@ Template.queue_list.events({
     document.getElementById("chat_sms_display").style.height = heights * .55  + "px";
     }
 
-   if(game.global)
-      {
+    if(game.global)
+    {
     setInterval(function(){
       if(shown_tab){
       var divHeight = $('#chat_sms_display').height();
