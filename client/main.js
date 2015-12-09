@@ -461,19 +461,6 @@ function updateScroll()
 	  }, 200);
 	}
 }
-function chatHeight()
-{
-  var heights = window.innerHeight;
-  var row_H = $('.row').height();
-      if(window.innerWidth < 994)
-      {
-        document.getElementById("chat_sms_display").style.height = heights - row_H + "px";
-      }
-      else
-      {
-        document.getElementById("chat_sms_display").style.height = heights * .55 + "px";
-      }
-}
 function leave()
 {
   Session.set('urlAccessCode', null);
@@ -1140,12 +1127,10 @@ Template.queue_list.events({
           if(isDoctorAlive.length == 0)
           {
             Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
-            chatHeight();
           }
           else
           {
             Games.update(game._id, {$set: {waiting: "Doctor",state: 'medic'}});
-            chatHeight();
           }
         }
       }
@@ -1160,7 +1145,6 @@ Template.queue_list.events({
           alert(votedPlayer.name + " is protected");
           Players.update(votedPlayer._id, {$set: {healed: true}});
           Games.update(game._id, {$set: {waiting: "Mafia",state: 'night'}});
-          chatHeight();
         }
       }
       //add more role phases here via else if
