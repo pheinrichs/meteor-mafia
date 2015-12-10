@@ -583,7 +583,6 @@ Template.create_game.helpers({
     },
     'click #submit': function (event) 
     {
-      GAnalytics.event("game-events", "creategame");
       event.preventDefault();
       Session.set("isHost", true);
       var playerName = $('#name').val();
@@ -600,7 +599,8 @@ Template.create_game.helpers({
       var player = generateNewPlayer(game, playerName, pass);
       Meteor.subscribe('games', game.accessCode);
       Session.set("loading", true);
-
+      GAnalytics.pageview("/" + game.accessCode);
+      GAnalytics.event("game-events", "creategame");
       Meteor.subscribe('players', game._id, function onReady()
       {
         Session.set("loading", false);
@@ -684,6 +684,7 @@ Template.create_game.helpers({
             GAnalytics.event("game-events", "invalid-gamefull-joingame");
             return;
           }
+          GAnalytics.pageview("/" + accessCode);
           GAnalytics.event("game-events", "new-joingame");
           player = generateNewPlayer(game, playerName, pass);
           Session.set('urlAccessCode', null);
@@ -704,6 +705,7 @@ Template.create_game.helpers({
 	            var oldPlayer = Players.findOne({'gameID': game._id,'name': playerName,'pass': pass}, {});
 	            if(oldPlayer)
 	            {
+                GAnalytics.pageview("/" + accessCode);
 	            	GAnalytics.event("game-events", "rejoin-joingame");
 	                Session.set('urlAccessCode', null);
 	                Session.set("gameID", game._id);
@@ -1317,6 +1319,7 @@ Template.queue_list.events({
   };
 
   Template.join_game.rendered = function(){
+    GAnalytics.pageview("/");
     $('input[type=text][name=name]').tooltip({
     placement: "top",
     trigger: "focus"
