@@ -1,7 +1,7 @@
 # meteor-mafia
 A meteor.js app based on the party game mafia
 
-[Can be found here](mafiagame.meteor.com)
+[Can be found here](http://mafiagame.meteor.com)
 
 By no means is this professional, this is a project created to learn meteor.
 
