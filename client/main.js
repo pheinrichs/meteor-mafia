@@ -1023,6 +1023,10 @@ Template.queue_list.events({
       {
         return "you!";
       }
+      else if (game.waiting == "Players")
+      {
+        return "everyone. Time to vote.";
+      }
       else
       {
         return game.waiting;
@@ -1347,7 +1351,19 @@ Template.queue_list.events({
     placement: "top",
     trigger: "focus"
   });
-      $('input[type=text][name=pass]').tooltip({
+      $('input[type=password][name=pass]').tooltip({
+    placement: "bottom",
+    trigger: "focus"
+  });
+  };
+
+  Template.join_game.rendered = function(){
+
+    $('input[type=text][name=name]').tooltip({
+    placement: "top",
+    trigger: "focus"
+  });
+      $('input[type=password][name=pass]').tooltip({
     placement: "bottom",
     trigger: "focus"
   });
